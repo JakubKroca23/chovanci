@@ -1,0 +1,4 @@
+{
+  "name": "chovanci-match",
+  "main": "party/match.ts"
+}

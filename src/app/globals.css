@@ -1,26 +1,353 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eef3e8;
+  --foreground: #1f2a24;
+  --surface: #f7faf3;
+  --ink-muted: #4d5c54;
+  --line: #c5d2c0;
+  --accent-red: #c0392b;
+  --accent-blue: #2980b9;
+  --accent-green: #27ae60;
+  --accent-yellow: #f1c40f;
+  --accent-pink: #e91e63;
+  --accent-orange: #e67e22;
+  --shadow-card: 0 8px 0 color-mix(in srgb, var(--foreground) 12%, transparent);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at 12% 18%, color-mix(in srgb, var(--accent-yellow) 28%, transparent), transparent 34%),
+    radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--accent-pink) 18%, transparent), transparent 30%),
+    radial-gradient(circle at 70% 88%, color-mix(in srgb, var(--accent-blue) 16%, transparent), transparent 36%),
+    radial-gradient(circle at 18% 82%, color-mix(in srgb, var(--accent-green) 14%, transparent), transparent 32%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), "Segoe UI", sans-serif;
+  min-height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* —— Shared card UI —— */
+
+.card-view {
+  --card-accent: var(--accent-blue);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+}
+
+.card-view__frame {
+  border: 3px solid var(--card-accent);
+  border-radius: 0.85rem;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  line-height: 0;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.card-view--selected .card-view__frame {
+  transform: translateY(-6px) rotate(-1.5deg);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--card-accent) 55%, white),
+    0 12px 0 color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.card-view__image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.card-view__name {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  max-width: 10rem;
+}
+
+.card-view--compact .card-view__frame {
+  border-width: 2px;
+  border-radius: 0.65rem;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.hand-picker {
+  display: flex;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.15rem 0.85rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.hand-picker__btn {
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 0.75rem;
+}
+
+.hand-picker__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hand-picker__btn:not(:disabled):active .card-view__frame {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.situation-banner,
+.verdict-banner,
+.scoreboard {
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 1rem;
+  padding: 1rem 1.1rem;
+  box-shadow: var(--shadow-card);
+}
+
+.situation-banner__label,
+.verdict-banner__label,
+.scoreboard__title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+}
+
+.situation-banner__text,
+.verdict-banner__text {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.verdict-banner {
+  border-color: color-mix(in srgb, var(--card-accent, var(--accent-pink)) 55%, var(--line));
+}
+
+.verdict-banner__body {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+.verdict-banner__winner {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  color: var(--card-accent, var(--accent-pink));
+}
+
+.verdict-banner__copy {
+  min-width: 0;
+}
+
+.scoreboard__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.scoreboard__row {
+  display: grid;
+  grid-template-columns: 1.5rem 1fr auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.55rem;
+  background: color-mix(in srgb, var(--accent-green) 8%, var(--surface));
+}
+
+.scoreboard__rank {
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+
+.scoreboard__name {
+  font-weight: 600;
+}
+
+.scoreboard__score {
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.1rem;
+  color: var(--accent-blue);
+}
+
+/* —— Home —— */
+
+.home {
+  width: min(100%, 28rem);
+  margin: 0 auto;
+  padding: 2rem 1.15rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.home__brand {
+  text-align: center;
+}
+
+.home__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.6rem, 12vw, 3.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--accent-red);
+  text-shadow: 3px 3px 0 color-mix(in srgb, var(--accent-yellow) 70%, white);
+}
+
+.home__subtitle {
+  margin: 0.75rem auto 0;
+  max-width: 22rem;
+  color: var(--ink-muted);
+  font-size: 1.02rem;
+  line-height: 1.4;
+}
+
+.home__actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.home__btn {
+  display: block;
+  text-align: center;
+  padding: 0.95rem 1rem;
+  border-radius: 999px;
+  border: 3px solid var(--foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 5px 0 var(--foreground);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.home__btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--foreground);
+}
+
+.home__btn--solo {
+  background: var(--accent-yellow);
+  color: #1f2a24;
+}
+
+.home__btn--create {
+  background: var(--accent-green);
+  color: #fff;
+}
+
+.home__btn--join {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.home__btn--collection {
+  background: var(--surface);
+  color: var(--foreground);
+}
+
+.home__hint {
+  margin: 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+/* —— Sbírka —— */
+
+.sbirka {
+  width: min(100%, 42rem);
+  margin: 0 auto;
+  padding: 1.35rem 1rem 2.5rem;
+}
+
+.sbirka__header {
+  margin-bottom: 1.25rem;
+}
+
+.sbirka__back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.sbirka__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.8rem, 8vw, 2.4rem);
+  color: var(--accent-pink);
+}
+
+.sbirka__intro {
+  margin: 0.45rem 0 0;
+  color: var(--ink-muted);
+}
+
+.sbirka__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 0.75rem;
+}
+
+.sbirka__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  text-align: center;
+}
+
+.sbirka__flavor {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--ink-muted);
+  max-width: 11rem;
+}
+
+@media (min-width: 640px) {
+  .sbirka__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem 1rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .sbirka__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

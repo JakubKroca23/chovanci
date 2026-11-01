@@ -2,13 +2,15 @@ export type HsCardType = "minion" | "spell" | "weapon" | "secret";
 export type HsRarity = "common" | "rare" | "epic" | "legendary";
 export type HsKeyword =
   | "charge"
+  | "rush"
   | "taunt"
   | "divine_shield"
   | "windfury"
   | "stealth"
   | "battlecry"
   | "deathrattle"
-  | "secret";
+  | "secret"
+  | "lifesteal";
 
 export type HsEffect = {
   when: "battlecry" | "deathrattle" | "play" | "secret";
@@ -17,7 +19,7 @@ export type HsEffect = {
   attack?: number;
   health?: number;
   cardId?: string;
-  needsTarget?: "enemy_minion" | "friendly_minion" | "any_minion";
+  needsTarget?: "enemy_minion" | "friendly_minion" | "any_minion" | "enemy_hero";
 };
 
 export type HsCardDef = {
@@ -48,10 +50,15 @@ export type BoardMinion = {
   maxHealth: number;
   keywords: HsKeyword[];
   canAttack: boolean;
+  /** HS summoning sickness; false after surviving a turn start */
+  slept: boolean;
   attacksThisTurn: number;
   divineShield: boolean;
   stealth: boolean;
+  /** Rush: may attack minions but not heroes while slept */
+  rush: boolean;
   exhausted: boolean;
+  lifesteal: boolean;
 };
 
 export type WeaponState = {
@@ -80,6 +87,7 @@ export type PlayerState = {
   weapon: WeaponState;
   secrets: SecretState[];
   heroPowerUsed: boolean;
+  heroAttackedThisTurn: boolean;
   fatigue: number;
 };
 
@@ -89,6 +97,7 @@ export type HsMatch = {
   id: string;
   players: [PlayerState, PlayerState];
   active: 0 | 1;
+  /** Increments each time a player starts their turn */
   turn: number;
   phase: MatchPhase;
   winner: 0 | 1 | null;
@@ -102,6 +111,6 @@ export type HsAction =
   | {
       type: "attack";
       attackerInstanceId: string;
-      target: "hero" | string; // instanceId
+      target: "hero" | string;
     }
   | { type: "hero_attack"; target: "hero" | string };

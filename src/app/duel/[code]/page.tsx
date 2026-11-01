@@ -13,6 +13,11 @@ import { getActiveDeck, loadHero } from "@/lib/hs/storage";
 import type { HsMatch } from "@/lib/hs/types";
 import "../../play/battle.css";
 
+type PendingPlay = {
+  handIndex: number;
+  needs: "enemy_minion" | "friendly_minion" | "any_minion";
+};
+
 function DuelInner() {
   const params = useParams<{ code: string }>();
   const search = useSearchParams();
@@ -26,6 +31,7 @@ function DuelInner() {
   const [you, setYou] = useState<0 | 1>(0);
   const [status, setStatus] = useState("Připojuji…");
   const [selected, setSelected] = useState<string | null>(null);
+  const [pendingPlay, setPendingPlay] = useState<PendingPlay | null>(null);
   const [send, setSend] = useState<((msg: unknown) => void) | null>(null);
 
   useEffect(() => {
@@ -49,6 +55,8 @@ function DuelInner() {
         setMatch(msg.match);
         setYou(msg.you);
         setStatus(msg.match.phase === "ended" ? "Konec" : "Zápas");
+        setPendingPlay(null);
+        setSelected(null);
       }
       if (msg.type === "error") setStatus(msg.message);
     });
@@ -65,6 +73,19 @@ function DuelInner() {
   function act(action: object) {
     send?.({ type: "action", action });
     setSelected(null);
+    setPendingPlay(null);
+  }
+
+  function tryPlay(handIndex: number) {
+    if (!me) return;
+    const def = getCardDef(me.hand[handIndex]!);
+    const need = def.effects?.find((e) => e.needsTarget)?.needsTarget;
+    if (need === "enemy_minion" || need === "friendly_minion" || need === "any_minion") {
+      setPendingPlay({ handIndex, needs: need });
+      setStatus("Vyber cíl");
+      return;
+    }
+    act({ type: "play_card", handIndex });
   }
 
   return (
@@ -81,21 +102,16 @@ function DuelInner() {
           <h1>Čekárna</h1>
           <p className="battle__lobby-code">{code}</p>
           <p>{status}</p>
-          <p>Sdílej kód kamarádovi. Až budou dva, zápas naskočí.</p>
+          <p>Sdílej kód. Až budou dva, zápas naskočí.</p>
         </section>
       )}
 
       {match && me && foe && (
         <>
           <header className="battle__top">
-            <HeroPlate
-              name={foe.name}
-              heroId={foe.heroId}
-              hp={foe.hp}
-              armor={foe.armor}
-            />
+            <HeroPlate name={foe.name} heroId={foe.heroId} hp={foe.hp} armor={foe.armor} />
             <div className={`battle__turn${myTurn ? " battle__turn--active" : ""}`}>
-              {myTurn ? "Tvůj tah" : "Soupeřův tah"} · {match.turn}
+              {pendingPlay ? "Vyber cíl" : myTurn ? "Tvůj tah" : "Soupeřův tah"} · {match.turn}
             </div>
           </header>
 
@@ -105,20 +121,29 @@ function DuelInner() {
                 <BoardMinionView
                   key={m.instanceId}
                   minion={m}
-                  disabled={!myTurn || !selected}
-                  onClick={() =>
+                  disabled={!myTurn}
+                  onClick={() => {
+                    if (pendingPlay && (pendingPlay.needs === "enemy_minion" || pendingPlay.needs === "any_minion")) {
+                      act({
+                        type: "play_card",
+                        handIndex: pendingPlay.handIndex,
+                        targetInstanceId: m.instanceId,
+                      });
+                      return;
+                    }
+                    if (!selected) return;
                     act({
                       type: "attack",
                       attackerInstanceId: selected,
                       target: m.instanceId,
-                    })
-                  }
+                    });
+                  }}
                 />
               ))}
               <button
                 type="button"
                 className="battle__face"
-                disabled={!myTurn}
+                disabled={!myTurn || !!pendingPlay}
                 onClick={() =>
                   selected
                     ? act({
@@ -140,7 +165,17 @@ function DuelInner() {
                   selected={selected === m.instanceId}
                   ready={m.canAttack && !m.exhausted}
                   disabled={!myTurn}
-                  onClick={() => setSelected(m.instanceId)}
+                  onClick={() => {
+                    if (pendingPlay && (pendingPlay.needs === "friendly_minion" || pendingPlay.needs === "any_minion")) {
+                      act({
+                        type: "play_card",
+                        handIndex: pendingPlay.handIndex,
+                        targetInstanceId: m.instanceId,
+                      });
+                      return;
+                    }
+                    setSelected(m.instanceId);
+                  }}
                 />
               ))}
             </div>
@@ -148,12 +183,7 @@ function DuelInner() {
 
           <footer className="battle__bottom">
             <div>
-              <HeroPlate
-                name={me.name}
-                heroId={me.heroId}
-                hp={me.hp}
-                armor={me.armor}
-              />
+              <HeroPlate name={me.name} heroId={me.heroId} hp={me.hp} armor={me.armor} />
               <div style={{ marginTop: "0.55rem" }}>
                 <ManaBar mana={me.mana} maxMana={me.maxMana} />
               </div>
@@ -188,7 +218,8 @@ function DuelInner() {
                   size="sm"
                   showText={false}
                   disabled={!myTurn || def.cost > me.mana}
-                  onClick={() => act({ type: "play_card", handIndex })}
+                  selected={pendingPlay?.handIndex === handIndex}
+                  onClick={() => tryPlay(handIndex)}
                 />
               );
             })}

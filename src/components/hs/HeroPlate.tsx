@@ -1,13 +1,9 @@
+"use client";
+
 import { portraitSrc } from "@/lib/hs/art";
 import { HEROES } from "@/lib/hs/cards";
 import type { HeroId } from "@/lib/hs/types";
 import "./hs-ui.css";
-
-const HERO_ART: Record<HeroId, string> = {
-  nevychovanec: "/cards/portraits/nevychovanec.jpg",
-  vychovanec: "/cards/portraits/vychovanec.jpg",
-  prezivanec: "/cards/portraits/prezivanec.jpg",
-};
 
 type Props = {
   name: string;
@@ -23,13 +19,11 @@ export function HeroPlate({ name, heroId, hp, armor = 0, subtitle }: Props) {
     <div className="hs-hero">
       <div className="hs-hero__portrait">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={portraitSrc(HERO_ART[heroId])} alt="" />
+        <img src={portraitSrc(hero?.art ?? "/cards/hs/chovanec.jpg")} alt="" />
       </div>
       <div>
         <p className="hs-hero__name">{name}</p>
-        <p className="hs-hero__meta">
-          {subtitle ?? hero?.name ?? heroId}
-        </p>
+        <p className="hs-hero__meta">{subtitle ?? hero?.name ?? heroId}</p>
       </div>
       <div className="hs-hero__vitals">
         <div className="hs-vital hs-vital--hp">

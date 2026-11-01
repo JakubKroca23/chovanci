@@ -37,6 +37,7 @@ function opponent(i: 0 | 1): 0 | 1 {
 function createMinion(def: HsCardDef): BoardMinion {
   const keywords = [...def.keywords];
   const charge = keywords.includes("charge");
+  const rush = keywords.includes("rush");
   return {
     instanceId: uid("m"),
     cardId: def.id,
@@ -44,11 +45,14 @@ function createMinion(def: HsCardDef): BoardMinion {
     health: def.health ?? 1,
     maxHealth: def.health ?? 1,
     keywords,
-    canAttack: charge,
+    slept: !charge,
+    canAttack: charge || rush,
     attacksThisTurn: 0,
     divineShield: keywords.includes("divine_shield"),
     stealth: keywords.includes("stealth"),
-    exhausted: !charge,
+    rush: rush && !charge,
+    exhausted: !(charge || rush),
+    lifesteal: keywords.includes("lifesteal"),
   };
 }
 
@@ -58,7 +62,6 @@ function createPlayer(
   heroId: HeroId,
   deckIds: string[],
 ): PlayerState {
-  const deck = shuffle(deckIds);
   return {
     id,
     name,
@@ -67,12 +70,13 @@ function createPlayer(
     armor: 0,
     mana: 0,
     maxMana: 0,
-    deck,
+    deck: shuffle(deckIds),
     hand: [],
     board: [],
     weapon: null,
     secrets: [],
     heroPowerUsed: false,
+    heroAttackedThisTurn: false,
     fatigue: 0,
   };
 }
@@ -86,7 +90,7 @@ function drawCard(p: PlayerState, n = 1, log: string[]) {
     }
     const id = p.deck.pop()!;
     if (p.hand.length >= 10) {
-      log.push(`${p.name} přetáhl kartu (zahozeno).`);
+      log.push(`${p.name} přetáhl kartu (burn).`);
     } else {
       p.hand.push(id);
     }
@@ -101,49 +105,61 @@ function damageHero(p: PlayerState, amount: number, log: string[], why: string) 
     left -= use;
   }
   p.hp -= left;
-  log.push(`${why}: ${p.name} −${amount} (HP ${p.hp}, armor ${p.armor})`);
+  log.push(`${why}: ${p.name} −${amount} → HP ${Math.max(0, p.hp)}`);
 }
 
-function damageMinion(
-  m: BoardMinion,
-  amount: number,
-  log: string[],
-): boolean {
+function damageMinion(m: BoardMinion, amount: number, log: string[]): boolean {
   if (amount <= 0) return false;
   if (m.divineShield) {
     m.divineShield = false;
-    log.push(`${m.cardId} ztratil Divine Shield.`);
+    log.push(`${getReadable(m.cardId)}: Divine Shield pryč`);
     return false;
   }
   m.health -= amount;
   return m.health <= 0;
 }
 
-function removeDead(
-  match: HsMatch,
-  extra: HsCardDef[],
-  side: 0 | 1,
-) {
+function getReadable(cardId: string) {
+  try {
+    return getCardDef(cardId).name;
+  } catch {
+    return cardId;
+  }
+}
+
+function healHero(p: PlayerState, amount: number, log: string[]) {
+  const before = p.hp;
+  p.hp = Math.min(30, p.hp + amount);
+  log.push(`${p.name} +${p.hp - before} HP`);
+}
+
+function removeDead(match: HsMatch, extra: HsCardDef[], side: 0 | 1) {
   const p = match.players[side]!;
   const dead = p.board.filter((m) => m.health <= 0);
   p.board = p.board.filter((m) => m.health > 0);
   for (const m of dead) {
-    match.log.push(`Zemřel: ${m.cardId}`);
+    match.log.push(`† ${getReadable(m.cardId)}`);
     const def = getCardDef(m.cardId, extra);
-    runEffects(match, extra, side, def.effects?.filter((e) => e.when === "deathrattle") ?? [], m.instanceId);
+    runEffects(
+      match,
+      extra,
+      side,
+      def.effects?.filter((e) => e.when === "deathrattle") ?? [],
+      m.instanceId,
+    );
   }
 }
 
 function checkWinner(match: HsMatch) {
-  if (match.players[0]!.hp <= 0 && match.players[1]!.hp <= 0) {
+  const p0 = match.players[0]!.hp <= 0;
+  const p1 = match.players[1]!.hp <= 0;
+  if (p0 && p1) {
     match.phase = "ended";
-    match.winner = match.active; // active wins ties weirdly — prefer second player alive check
-    if (match.players[0]!.hp <= 0) match.winner = 1;
-    if (match.players[1]!.hp <= 0) match.winner = 0;
-  } else if (match.players[0]!.hp <= 0) {
+    match.winner = opponent(match.active);
+  } else if (p0) {
     match.phase = "ended";
     match.winner = 1;
-  } else if (match.players[1]!.hp <= 0) {
+  } else if (p1) {
     match.phase = "ended";
     match.winner = 0;
   }
@@ -168,20 +184,26 @@ function runEffects(
         drawCard(me, fx.amount ?? 1, match.log);
         break;
       case "heal_hero":
-        me.hp = Math.min(30, me.hp + (fx.amount ?? 0));
-        match.log.push(`${me.name} heal +${fx.amount}`);
+        healHero(me, fx.amount ?? 0, match.log);
         break;
       case "armor":
         me.armor += fx.amount ?? 0;
+        match.log.push(`${me.name} +${fx.amount} armor`);
         break;
       case "damage_enemy_hero":
         damageHero(foe, fx.amount ?? 0, match.log, "Kouzlo");
         break;
+      case "gain_mana_crystal": {
+        // The Coin: temporary mana this turn only
+        me.mana = Math.min(10, me.mana + (fx.amount ?? 1));
+        match.log.push(`${me.name} +${fx.amount ?? 1} mana (dočasná)`);
+        break;
+      }
       case "summon": {
         if (me.board.length >= 7) break;
         const def = getCardDef(fx.cardId!, extra);
         me.board.push(createMinion(def));
-        match.log.push(`${me.name} summon ${def.name}`);
+        match.log.push(`Summon: ${def.name}`);
         break;
       }
       case "heal_random_friendly_minion": {
@@ -200,6 +222,7 @@ function runEffects(
         t.attack = Math.max(0, t.attack + (fx.attack ?? 0));
         t.health += fx.health ?? 0;
         t.maxHealth += fx.health ?? 0;
+        if (t.health <= 0) removeDead(match, extra, opponent(side));
         break;
       }
       case "buff_friendly_minion": {
@@ -211,17 +234,27 @@ function runEffects(
         break;
       }
       case "aoe_enemy_minions": {
-        for (const m of foe.board) {
+        for (const m of [...foe.board]) {
           damageMinion(m, fx.amount ?? 0, match.log);
         }
         removeDead(match, extra, opponent(side));
         break;
       }
+      case "damage_enemy_minion": {
+        const t = foe.board.find((m) => m.instanceId === targetInstanceId);
+        if (!t) throw new Error("Vyber cíl.");
+        damageMinion(t, fx.amount ?? 0, match.log);
+        removeDead(match, extra, opponent(side));
+        break;
+      }
       case "destroy_minion_leq_health": {
         const t = foe.board.find((m) => m.instanceId === targetInstanceId);
-        if (t && t.health <= (fx.amount ?? 0)) {
+        if (!t) throw new Error("Vyber cíl.");
+        if (t.health <= (fx.amount ?? 0)) {
           t.health = 0;
           removeDead(match, extra, opponent(side));
+        } else {
+          throw new Error("Cíl má moc HP.");
         }
         break;
       }
@@ -264,26 +297,30 @@ function triggerSecrets(
       attackerInstanceId,
     );
     fired.push(secret);
-    break; // one secret per trigger event
+    break;
   }
   def.secrets = def.secrets.filter((s) => !fired.includes(s));
 }
 
-function startTurn(match: HsMatch, extra: HsCardDef[]) {
+function refreshAttackers(p: PlayerState) {
+  for (const m of p.board) {
+    m.slept = false;
+    m.rush = false;
+    m.attacksThisTurn = 0;
+    m.exhausted = false;
+    m.canAttack = m.attack > 0;
+  }
+}
+
+function startTurn(match: HsMatch, _extra: HsCardDef[]) {
   const p = match.players[match.active]!;
   p.maxMana = Math.min(10, p.maxMana + 1);
   p.mana = p.maxMana;
   p.heroPowerUsed = false;
-  for (const m of p.board) {
-    m.exhausted = false;
-    m.canAttack = true;
-    m.attacksThisTurn = 0;
-    if (m.stealth && m.keywords.includes("stealth")) {
-      // keep stealth until attacks
-    }
-  }
+  p.heroAttackedThisTurn = false;
+  refreshAttackers(p);
   drawCard(p, 1, match.log);
-  match.log.push(`— Tah ${match.turn}: ${p.name} (${p.mana}/${p.maxMana} mana) —`);
+  match.log.push(`—— Tah ${match.turn}: ${p.name} (${p.mana} mana) ——`);
 }
 
 export function createMatch(opts: {
@@ -304,26 +341,50 @@ export function createMatch(opts: {
     winner: null,
     log: ["Zápas začíná."],
   };
+  // HS opening: first 3, second 4 + The Coin
   drawCard(match.players[0]!, 3, match.log);
-  drawCard(match.players[1]!, 4, match.log); // second player coin-equivalent: +1 card
+  drawCard(match.players[1]!, 4, match.log);
+  if (match.players[1]!.hand.length < 10) {
+    match.players[1]!.hand.push("the_coin");
+  }
   match.players[0]!.maxMana = 0;
   match.players[1]!.maxMana = 0;
   startTurn(match, opts.extraCards ?? []);
   return match;
 }
 
-function hasTaunt(board: BoardMinion[]) {
-  return board.some((m) => m.keywords.includes("taunt") && !m.stealth);
-}
-
-function legalAttackTargets(
-  foe: PlayerState,
-): Array<"hero" | string> {
+function legalAttackTargets(foe: PlayerState): Array<"hero" | string> {
   const taunts = foe.board.filter(
     (m) => m.keywords.includes("taunt") && !m.stealth,
   );
   if (taunts.length) return taunts.map((m) => m.instanceId);
-  return ["hero", ...foe.board.filter((m) => !m.stealth).map((m) => m.instanceId)];
+  return [
+    "hero",
+    ...foe.board.filter((m) => !m.stealth).map((m) => m.instanceId),
+  ];
+}
+
+function canMinionAttackTarget(
+  attacker: BoardMinion,
+  target: "hero" | string,
+): boolean {
+  if (attacker.attack <= 0) return false;
+  if (attacker.exhausted && !attacker.canAttack) return false;
+  const maxAttacks = attacker.keywords.includes("windfury") ? 2 : 1;
+  if (attacker.attacksThisTurn >= maxAttacks) return false;
+  if (!attacker.canAttack) return false;
+  // Rush while slept: minions only
+  if (attacker.slept && attacker.rush && target === "hero") return false;
+  // Full summoning sickness (no charge/rush)
+  if (attacker.slept && !attacker.rush && !attacker.keywords.includes("charge")) {
+    return false;
+  }
+  return true;
+}
+
+function needsPlayTarget(def: HsCardDef): HsEffect["needsTarget"] | null {
+  const fx = def.effects?.find((e) => e.needsTarget);
+  return fx?.needsTarget ?? null;
 }
 
 export function applyAction(
@@ -352,8 +413,7 @@ export function applyAction(
       if (me.heroId === "nevychovanec") {
         damageHero(foe, 1, match.log, "Hero power");
       } else if (me.heroId === "vychovanec") {
-        me.hp = Math.min(30, me.hp + 2);
-        match.log.push("Hero power: heal 2");
+        healHero(me, 2, match.log);
       } else {
         me.armor += 2;
         match.log.push("Hero power: +2 armor");
@@ -365,6 +425,22 @@ export function applyAction(
       if (!cardId) throw new Error("Neplatná karta v ruce.");
       const def = getCardDef(cardId, extraCards);
       if (def.cost > me.mana) throw new Error("Málo many.");
+
+      const need = needsPlayTarget(def);
+      if (need === "enemy_minion" || need === "any_minion") {
+        if (!action.targetInstanceId) throw new Error("Vyber cíl.");
+        const boards = need === "enemy_minion" ? foe.board : [...me.board, ...foe.board];
+        if (!boards.some((m) => m.instanceId === action.targetInstanceId)) {
+          throw new Error("Neplatný cíl.");
+        }
+      }
+      if (need === "friendly_minion") {
+        if (!action.targetInstanceId) throw new Error("Vyber spojenecký cíl.");
+        if (!me.board.some((m) => m.instanceId === action.targetInstanceId)) {
+          throw new Error("Neplatný cíl.");
+        }
+      }
+
       me.mana -= def.cost;
       me.hand.splice(action.handIndex, 1);
 
@@ -383,8 +459,9 @@ export function applyAction(
         );
         triggerSecrets(match, extraCards, opponent(side), "on_minion_played");
       } else if (def.type === "spell") {
-        match.log.push(`${me.name} kouzlo ${def.name}`);
+        match.log.push(`${me.name}: ${def.name}`);
         triggerSecrets(match, extraCards, opponent(side), "on_spell");
+        if (match.winner !== null) break;
         runEffects(
           match,
           extraCards,
@@ -399,7 +476,7 @@ export function applyAction(
           attack: def.attack ?? 0,
           durability: def.health ?? 1,
         };
-        match.log.push(`${me.name} zbraň ${def.name}`);
+        match.log.push(`${me.name} vyzbrojuje ${def.name}`);
       } else if (def.type === "secret") {
         if (me.secrets.length >= 5) throw new Error("Max 5 secretů.");
         if (me.secrets.some((s) => s.cardId === def.id)) {
@@ -419,16 +496,12 @@ export function applyAction(
         (m) => m.instanceId === action.attackerInstanceId,
       );
       if (!attacker) throw new Error("Útočník neexistuje.");
-      if (!attacker.canAttack || attacker.exhausted || attacker.attack <= 0) {
-        throw new Error("Nemůže útočit.");
-      }
-      const maxAttacks = attacker.keywords.includes("windfury") ? 2 : 1;
-      if (attacker.attacksThisTurn >= maxAttacks) {
-        throw new Error("Už utočil.");
+      if (!canMinionAttackTarget(attacker, action.target)) {
+        throw new Error("Nemůže útočit (sickness / rush / už útočil).");
       }
       const targets = legalAttackTargets(foe);
       if (!targets.includes(action.target)) {
-        throw new Error("Neplatný cíl (Taunt?).");
+        throw new Error("Neplatný cíl (Taunt / Stealth).");
       }
 
       triggerSecrets(
@@ -442,39 +515,41 @@ export function applyAction(
 
       attacker.stealth = false;
       attacker.attacksThisTurn += 1;
-      if (
-        attacker.attacksThisTurn >=
-        (attacker.keywords.includes("windfury") ? 2 : 1)
-      ) {
+      const maxAttacks = attacker.keywords.includes("windfury") ? 2 : 1;
+      if (attacker.attacksThisTurn >= maxAttacks) {
         attacker.canAttack = false;
         attacker.exhausted = true;
       }
 
       if (action.target === "hero") {
-        damageHero(foe, attacker.attack, match.log, `${attacker.cardId} → hero`);
+        damageHero(foe, attacker.attack, match.log, getReadable(attacker.cardId));
+        if (attacker.lifesteal) healHero(me, attacker.attack, match.log);
       } else {
         const target = foe.board.find((m) => m.instanceId === action.target);
         if (!target) throw new Error("Cíl zmizel.");
-        const killedT = damageMinion(target, attacker.attack, match.log);
-        const killedA = damageMinion(attacker, target.attack, match.log);
-        if (killedT || killedA) {
-          removeDead(match, extraCards, side);
-          removeDead(match, extraCards, opponent(side));
-        }
+        const dmgOut = attacker.attack;
+        const dmgBack = target.attack;
+        damageMinion(target, dmgOut, match.log);
+        damageMinion(attacker, dmgBack, match.log);
+        if (attacker.lifesteal) healHero(me, dmgOut, match.log);
+        removeDead(match, extraCards, side);
+        removeDead(match, extraCards, opponent(side));
       }
       break;
     }
     case "hero_attack": {
       if (!me.weapon || me.weapon.attack <= 0) throw new Error("Nemáš zbraň.");
+      if (me.heroAttackedThisTurn) throw new Error("Hrdina už útočil.");
       const targets = legalAttackTargets(foe);
       if (!targets.includes(action.target)) throw new Error("Neplatný cíl.");
       const dmg = me.weapon.attack;
+      me.heroAttackedThisTurn = true;
       if (action.target === "hero") {
-        damageHero(foe, dmg, match.log, "Zbraň → hero");
+        damageHero(foe, dmg, match.log, "Zbraň");
       } else {
         const target = foe.board.find((m) => m.instanceId === action.target)!;
         damageMinion(target, dmg, match.log);
-        damageHero(me, target.attack, match.log, "Odveta na hrdinu");
+        damageHero(me, target.attack, match.log, "Odveta");
         removeDead(match, extraCards, opponent(side));
       }
       me.weapon.durability -= 1;
@@ -505,9 +580,11 @@ export function getLegalActions(
     const def = getCardDef(cardId, extraCards);
     if (def.cost > me.mana) return;
     if (def.type === "minion" && me.board.length >= 7) return;
-    const needs = def.effects?.find((e) => e.needsTarget)?.needsTarget;
-    if (needs === "enemy_minion") {
-      for (const t of foe.board) {
+    const needs = needsPlayTarget(def);
+    if (needs === "enemy_minion" || needs === "any_minion") {
+      const pool = needs === "enemy_minion" ? foe.board : [...foe.board, ...me.board];
+      if (pool.length === 0) return;
+      for (const t of pool) {
         actions.push({
           type: "play_card",
           handIndex,
@@ -515,6 +592,7 @@ export function getLegalActions(
         });
       }
     } else if (needs === "friendly_minion") {
+      if (me.board.length === 0) return;
       for (const t of me.board) {
         actions.push({
           type: "play_card",
@@ -529,17 +607,18 @@ export function getLegalActions(
 
   const targets = legalAttackTargets(foe);
   for (const m of me.board) {
-    if (!m.canAttack || m.exhausted || m.attack <= 0) continue;
     for (const t of targets) {
-      actions.push({
-        type: "attack",
-        attackerInstanceId: m.instanceId,
-        target: t,
-      });
+      if (canMinionAttackTarget(m, t)) {
+        actions.push({
+          type: "attack",
+          attackerInstanceId: m.instanceId,
+          target: t,
+        });
+      }
     }
   }
 
-  if (me.weapon) {
+  if (me.weapon && !me.heroAttackedThisTurn) {
     for (const t of targets) {
       actions.push({ type: "hero_attack", target: t });
     }

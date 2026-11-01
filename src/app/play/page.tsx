@@ -18,16 +18,13 @@ import {
 import type { HeroId, HsMatch } from "@/lib/hs/types";
 import "./battle.css";
 
-const HERO_ART: Record<HeroId, string> = {
-  nevychovanec: "/cards/portraits/nevychovanec.jpg",
-  vychovanec: "/cards/portraits/vychovanec.jpg",
-  prezivanec: "/cards/portraits/prezivanec.jpg",
-};
+type PendingPlay = { handIndex: number; needs: "enemy_minion" | "friendly_minion" | "any_minion" };
 
 export default function PlayPage() {
   const [heroId, setHeroId] = useState<HeroId>("nevychovanec");
   const [match, setMatch] = useState<HsMatch | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
+  const [pendingPlay, setPendingPlay] = useState<PendingPlay | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const extra = useMemo(() => loadGeneratedCards(), [match?.id]);
@@ -40,12 +37,7 @@ export default function PlayPage() {
     const deck = getActiveDeck();
     saveHero(heroId);
     const m = createMatch({
-      p0: {
-        id: "human",
-        name: "Ty",
-        heroId,
-        deck: deck.cards,
-      },
+      p0: { id: "human", name: "Ty", heroId, deck: deck.cards },
       p1: {
         id: "bot",
         name: "Bot Chovanec",
@@ -56,29 +48,45 @@ export default function PlayPage() {
     });
     setMatch(m);
     setSelected(null);
+    setPendingPlay(null);
     setError(null);
   }, [heroId]);
+
+  function afterHuman(next: HsMatch) {
+    setMatch(next);
+    setSelected(null);
+    setPendingPlay(null);
+    if (next.phase !== "ended" && next.active === 1) {
+      setBusy(true);
+      window.setTimeout(() => {
+        setMatch(runBotTurn(next, extra));
+        setBusy(false);
+      }, 420);
+    }
+  }
 
   function doAction(action: Parameters<typeof applyAction>[1]) {
     if (!match || busy || match.phase === "ended") return;
     if (match.active !== 0) return;
     try {
       setError(null);
-      let next = applyAction(match, action, extra);
-      setMatch(next);
-      setSelected(null);
-
-      if (next.phase !== "ended" && next.active === 1) {
-        setBusy(true);
-        window.setTimeout(() => {
-          next = runBotTurn(next, extra);
-          setMatch(next);
-          setBusy(false);
-        }, 450);
-      }
+      afterHuman(applyAction(match, action, extra));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Akce selhala");
     }
+  }
+
+  function tryPlayCard(handIndex: number) {
+    if (!match || busy) return;
+    const def = getCardDef(match.players[0]!.hand[handIndex]!, extra);
+    const need = def.effects?.find((e) => e.needsTarget)?.needsTarget;
+    if (need === "enemy_minion" || need === "friendly_minion" || need === "any_minion") {
+      setPendingPlay({ handIndex, needs: need });
+      setSelected(null);
+      setError("Vyber cíl na stole.");
+      return;
+    }
+    doAction({ type: "play_card", handIndex });
   }
 
   const me = match?.players[0];
@@ -97,7 +105,7 @@ export default function PlayPage() {
       {!match && (
         <section className="battle__setup">
           <h1>Souboj s botem</h1>
-          <p>Vyber hrdinu. Deck bereš z aktivního balíčku — jinak starter.</p>
+          <p>Mana 1→10, The Coin pro druhého, Rush / Charge / Taunt jako v HS.</p>
           <div className="battle__heroes">
             {HEROES.map((h) => (
               <button
@@ -107,7 +115,7 @@ export default function PlayPage() {
                 onClick={() => setHeroId(h.id)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={HERO_ART[h.id]} alt="" />
+                <img src={h.art} alt="" />
                 <div>
                   <strong>{h.name}</strong>
                   <span>
@@ -131,22 +139,18 @@ export default function PlayPage() {
               heroId={foe.heroId}
               hp={foe.hp}
               armor={foe.armor}
-              subtitle={
-                foe.secrets.length
-                  ? `Secrets ${foe.secrets.length}`
-                  : undefined
-              }
+              subtitle={foe.secrets.length ? `Secrets ${foe.secrets.length}` : undefined}
             />
-            <div
-              className={`battle__turn${myTurn && !busy ? " battle__turn--active" : ""}`}
-            >
+            <div className={`battle__turn${myTurn && !busy ? " battle__turn--active" : ""}`}>
               {match.phase === "ended"
                 ? "Konec"
                 : busy
                   ? "Bot hraje"
-                  : myTurn
-                    ? "Tvůj tah"
-                    : "Soupeř"}{" "}
+                  : pendingPlay
+                    ? "Vyber cíl"
+                    : myTurn
+                      ? "Tvůj tah"
+                      : "Soupeř"}{" "}
               · {match.turn}
             </div>
           </header>
@@ -158,8 +162,16 @@ export default function PlayPage() {
                   key={m.instanceId}
                   minion={m}
                   extra={extra}
-                  disabled={!selected || busy || !myTurn}
+                  disabled={busy || !myTurn}
                   onClick={() => {
+                    if (pendingPlay && (pendingPlay.needs === "enemy_minion" || pendingPlay.needs === "any_minion")) {
+                      doAction({
+                        type: "play_card",
+                        handIndex: pendingPlay.handIndex,
+                        targetInstanceId: m.instanceId,
+                      });
+                      return;
+                    }
                     if (!selected) return;
                     doAction({
                       type: "attack",
@@ -172,7 +184,7 @@ export default function PlayPage() {
               <button
                 type="button"
                 className="battle__face"
-                disabled={busy || !myTurn}
+                disabled={busy || !myTurn || !!pendingPlay}
                 onClick={() => {
                   if (!selected) {
                     doAction({ type: "hero_attack", target: "hero" });
@@ -198,11 +210,18 @@ export default function PlayPage() {
                   selected={selected === m.instanceId}
                   ready={m.canAttack && !m.exhausted}
                   disabled={busy || !myTurn}
-                  onClick={() =>
-                    setSelected((s) =>
-                      s === m.instanceId ? null : m.instanceId,
-                    )
-                  }
+                  onClick={() => {
+                    if (pendingPlay && (pendingPlay.needs === "friendly_minion" || pendingPlay.needs === "any_minion")) {
+                      doAction({
+                        type: "play_card",
+                        handIndex: pendingPlay.handIndex,
+                        targetInstanceId: m.instanceId,
+                      });
+                      return;
+                    }
+                    setPendingPlay(null);
+                    setSelected((s) => (s === m.instanceId ? null : m.instanceId));
+                  }}
                 />
               ))}
             </div>
@@ -217,8 +236,10 @@ export default function PlayPage() {
                 armor={me.armor}
                 subtitle={
                   me.weapon
-                    ? `Zbraň ${me.weapon.attack}/${me.weapon.durability}`
-                    : undefined
+                    ? `Zbraň ${me.weapon.attack}/${me.weapon.durability}${me.heroAttackedThisTurn ? " (už útočila)" : ""}`
+                    : me.secrets.length
+                      ? `Secrets ${me.secrets.length}`
+                      : undefined
                 }
               />
               <div style={{ marginTop: "0.55rem" }}>
@@ -226,6 +247,18 @@ export default function PlayPage() {
               </div>
             </div>
             <div className="battle__actions">
+              {pendingPlay && (
+                <button
+                  type="button"
+                  className="cs-btn cs-btn--ghost"
+                  onClick={() => {
+                    setPendingPlay(null);
+                    setError(null);
+                  }}
+                >
+                  Zrušit cíl
+                </button>
+              )}
               <button
                 type="button"
                 className="cs-btn"
@@ -256,7 +289,8 @@ export default function PlayPage() {
                     size="sm"
                     showText={false}
                     disabled={!canPlay}
-                    onClick={() => doAction({ type: "play_card", handIndex })}
+                    selected={pendingPlay?.handIndex === handIndex}
+                    onClick={() => tryPlayCard(handIndex)}
                   />
                 </div>
               );
@@ -275,7 +309,7 @@ export default function PlayPage() {
             </div>
           )}
           <div className="battle__log">
-            {[...match.log].slice(-8).map((line, i) => (
+            {[...match.log].slice(-10).map((line, i) => (
               <div key={`${i}-${line}`}>{line}</div>
             ))}
           </div>

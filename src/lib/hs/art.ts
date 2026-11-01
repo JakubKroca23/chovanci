@@ -1,7 +1,11 @@
-/** Portrait crop when available; falls back to full card art. */
+/** Prefer painted HS art; fall back to portrait crop / original. */
 export function portraitSrc(art: string): string {
-  if (!art.startsWith("/cards/")) return art;
+  if (!art) return "/cards/hs/chovanec.jpg";
+  if (art.startsWith("/cards/hs/")) return art;
   if (art.includes("/portraits/")) return art;
-  const file = art.replace("/cards/", "");
-  return `/cards/portraits/${file}`;
+  if (art.startsWith("/cards/")) {
+    const file = art.replace("/cards/", "");
+    return `/cards/hs/${file}`;
+  }
+  return art;
 }

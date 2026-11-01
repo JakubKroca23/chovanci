@@ -28,6 +28,11 @@ NEXT_PUBLIC_PARTYKIT_HOST=localhost:1999 npm run dev
 - **Multi** — create/join with a 4-letter room code, 2–6 players, 5 rounds, finale title
 - **Sbírka** — all 16 cards
 
+### Multiplayer notes
+
+Hand size scales with player count so a 16-card deck can deal unique cards:
+**2–4 players → 4 cards**, **5 → 3**, **6 → 2**. After each round, hands refill to that size.
+
 ## Stack
 
 Next.js App Router, TypeScript, Tailwind CSS v4, Vitest, PartyKit / PartySocket.

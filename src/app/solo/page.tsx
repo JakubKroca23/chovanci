@@ -213,9 +213,13 @@ export default function SoloPage() {
 
   async function handleShare() {
     const card = starterCardId ? getCard(starterCardId) : null;
-    const text = card
-      ? `V solo Chovancích jsem zvládl streak ${streak}! Můj Chovanec: ${card.name}.`
-      : `V solo Chovancích jsem zvládl streak ${streak}!`;
+    const verdict = outcome?.verdictText?.trim();
+    const parts = [
+      `V solo Chovancích jsem zvládl streak ${streak}!`,
+      card ? `Můj Chovanec: ${card.name}.` : null,
+      verdict ? `Verdikt: ${verdict}` : null,
+    ].filter(Boolean);
+    const text = parts.join(" ");
 
     try {
       if (typeof navigator !== "undefined" && typeof navigator.share === "function") {

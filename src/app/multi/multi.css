@@ -1,0 +1,204 @@
+.multi {
+  width: min(100%, 28rem);
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.multi__back {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--accent-blue);
+}
+
+.multi__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.multi__title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.7rem, 8vw, 2.2rem);
+  color: var(--accent-green);
+}
+
+.multi__meta {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}
+
+.multi__code {
+  font-family: var(--font-display), sans-serif;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.multi__form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.multi__label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.multi__input {
+  width: 100%;
+  padding: 0.85rem 0.95rem;
+  border-radius: 0.85rem;
+  border: 2px solid var(--foreground);
+  background: var(--surface);
+  font: inherit;
+  font-size: 1.05rem;
+}
+
+.multi__input--code {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 700;
+}
+
+.multi__actions {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.multi__btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 0.9rem 1rem;
+  border-radius: 999px;
+  border: 3px solid var(--foreground);
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  box-shadow: 0 5px 0 var(--foreground);
+  cursor: pointer;
+  background: var(--accent-yellow);
+  color: #1f2a24;
+}
+
+.multi__btn--green {
+  background: var(--accent-green);
+  color: #fff;
+}
+
+.multi__btn--blue {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.multi__btn--secondary {
+  background: var(--surface);
+}
+
+.multi__btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--foreground);
+}
+
+.multi__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.multi__hint {
+  margin: 0;
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.multi__error {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  border: 2px solid var(--accent-red);
+  background: color-mix(in srgb, var(--accent-red) 12%, white);
+  color: var(--accent-red);
+  font-weight: 600;
+}
+
+.multi__waiting {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.15rem;
+  color: var(--accent-blue);
+}
+
+.multi__players {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.multi__player {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 2px solid var(--line);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--surface) 88%, white);
+  font-weight: 600;
+}
+
+.multi__player-tag {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.multi__plays {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.multi__play {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.multi__play-name {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-align: center;
+  max-width: 6.5rem;
+}
+
+.multi__finale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  text-align: center;
+}
+
+.multi__finale-title {
+  margin: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.35rem;
+  line-height: 1.3;
+  color: var(--accent-pink);
+}

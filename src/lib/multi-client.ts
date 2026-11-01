@@ -30,7 +30,16 @@ const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I/O
 const PLAYER_ID_KEY = "chovanci:playerId";
 
 export const DISCONNECT_CS =
-  "Spojení s místností selhalo. Zkontroluj PartyKit (npx partykit dev) a obnov stránku.";
+  "Spojení s místností selhalo. Obnov stránku nebo zkus jinou síť.";
+
+/** Production self-hosted WS base, e.g. wss://chovanec.propoj.app/ws */
+export function getMatchWsUrl(roomCode: string): string | null {
+  const base = process.env.NEXT_PUBLIC_MATCH_WS_URL?.replace(/\/$/, "");
+  if (!base) return null;
+  const url = new URL(base);
+  url.searchParams.set("room", roomCode.toUpperCase());
+  return url.toString();
+}
 
 export function getPartyKitHost(): string {
   return process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? "localhost:1999";
@@ -77,11 +86,32 @@ function isServerError(value: unknown): value is ServerError {
   );
 }
 
-export function connectToMatch(code: string): MatchConnection {
-  const socket = new PartySocket({
+type WireSocket = {
+  send: (data: string) => void;
+  addEventListener: (
+    type: "message" | "open" | "error" | "close",
+    listener: (event: MessageEvent | Event) => void,
+  ) => void;
+  removeEventListener: (
+    type: "message" | "open" | "error" | "close",
+    listener: (event: MessageEvent | Event) => void,
+  ) => void;
+  close: () => void;
+};
+
+function createWireSocket(code: string): WireSocket {
+  const wsUrl = getMatchWsUrl(code);
+  if (wsUrl) {
+    return new WebSocket(wsUrl) as unknown as WireSocket;
+  }
+  return new PartySocket({
     host: getPartyKitHost(),
     room: code.toUpperCase(),
-  });
+  }) as unknown as WireSocket;
+}
+
+export function connectToMatch(code: string): MatchConnection {
+  const socket = createWireSocket(code);
 
   const listeners = new Set<(msg: MatchMessage) => void>();
   let isOpen = false;
@@ -90,10 +120,11 @@ export function connectToMatch(code: string): MatchConnection {
     for (const cb of listeners) cb(msg);
   };
 
-  const onMessage = (event: MessageEvent) => {
+  const onMessage = (event: MessageEvent | Event) => {
+    const data = (event as MessageEvent).data;
     let parsed: unknown;
     try {
-      parsed = JSON.parse(String(event.data));
+      parsed = JSON.parse(String(data));
     } catch {
       return;
     }

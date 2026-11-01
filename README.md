@@ -9,17 +9,29 @@ Czech mobile party card game — situations, a hand of Chovanci, and a judge ver
 ```bash
 npm install
 npm run dev                 # web (http://localhost:3000)
-npx partykit dev            # multiplayer rooms (default host localhost:1999)
+npx partykit dev            # local multiplayer (localhost:1999)
 npm test
 node scripts/crop-cards.mjs # crop source art into public/cards
 ```
 
-Alternative PartyKit script: `npm run party:dev`.
+Local multi: start PartyKit in a second terminal (`npm run party:dev`).  
+Production multi uses self-hosted WebSocket (`NEXT_PUBLIC_MATCH_WS_URL`).
 
-For multiplayer in another terminal, start PartyKit before opening a room. Optional override:
+## Production (server-main)
+
+Doména: https://chovanec.propoj.app  
+Cesta na serveru: `/home/ubuntu/personal/projects/chovanci` (síť Traefik `personal`)
 
 ```bash
-NEXT_PUBLIC_PARTYKIT_HOST=localhost:1999 npm run dev
+ssh -i ~/github/server_main.key ubuntu@92.5.8.24 \
+  'cd /home/ubuntu/personal/projects/chovanci && git fetch origin && git checkout main \
+   && git pull --ff-only origin main && docker compose up -d --build'
+```
+
+Ověření:
+
+```bash
+curl -sI https://chovanec.propoj.app/
 ```
 
 ## Modes

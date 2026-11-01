@@ -14,6 +14,7 @@ export const MULTI_ERROR_CS: Record<string, string> = {
   ALREADY_PLAYED: "Už jsi v tomto kole zahrál.",
   CARD_NOT_IN_HAND: "Tuhle kartu nemáš v ruce.",
   REBIND_UNKNOWN: "Nepodařilo se znovu připojit — nejsi v této místnosti.",
+  BAD_ROOM: "Neplatný kód místnosti.",
 };
 
 /** English match-machine throws → stable codes for the client map. */

@@ -1,0 +1,11 @@
+node_modules
+.next
+.worktrees
+.superpowers
+.git
+docs/superpowers/sdd
+*.md
+!README.md
+.DS_Store
+.env*
+!.env.example

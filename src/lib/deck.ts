@@ -1,5 +1,6 @@
 import { getCards, getSituations } from "./cards";
 import { hashNoise } from "./hash";
+import type { SituationPack } from "./types";
 
 export function shuffle<T>(items: T[], seed: string): T[] {
   const arr = [...items];
@@ -58,12 +59,23 @@ export function drawCard(
   return { hand: [...hand, card], deck: nextDeck, discard: nextDiscard };
 }
 
-export function pickSituationId(seed: string, usedIds: string[]): string {
-  const ids = getSituations().map((s) => s.id);
+export function situationIdsForPack(pack: SituationPack = "mix"): string[] {
+  const all = getSituations();
+  if (pack === "mix") return all.map((s) => s.id);
+  const filtered = all.filter((s) => (s.pack ?? "mix") === pack);
+  return filtered.length > 0 ? filtered.map((s) => s.id) : all.map((s) => s.id);
+}
+
+export function pickSituationId(
+  seed: string,
+  usedIds: string[],
+  pack: SituationPack = "mix",
+): string {
+  const ids = situationIdsForPack(pack);
   const used = new Set(usedIds);
   const shuffled = shuffle(ids, seed);
   const available = shuffled.find((id) => !used.has(id));
   if (available) return available;
-  // Exhausted — reshuffle all and pick first of the new order.
-  return shuffle(ids, `${seed}:reshuffle:${usedIds.length}`)[0];
+  // Exhausted — reshuffle pack and pick first of the new order.
+  return shuffle(ids, `${seed}:reshuffle:${usedIds.length}`)[0]!;
 }

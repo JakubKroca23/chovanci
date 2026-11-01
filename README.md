@@ -36,9 +36,11 @@ curl -sI https://chovanec.propoj.app/
 
 ## Modes
 
-- **Solo** — short quiz → starter card → endless situations, streak + share
-- **Multi** — create/join with a 4-letter room code, 2–6 players, 5 rounds, finale title
+- **Solo** — pack → quiz → starter card → situations, streak + share image
+- **Multi** — room code + QR/join link, pack picker, 2–6 players, 5 rounds, share finale image
 - **Sbírka** — all 16 cards
+
+Situation packs: **Mix**, **Práce**, **Rodina**, **Pátek**.
 
 ### Multiplayer notes
 

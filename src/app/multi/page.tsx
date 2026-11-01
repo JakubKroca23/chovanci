@@ -11,8 +11,13 @@ function MultiEntryInner() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode") === "join" ? "join" : "create";
 
+  const prefillCode = (searchParams.get("code") ?? "")
+    .toUpperCase()
+    .replace(/[^A-Z]/g, "")
+    .slice(0, 4);
+
   const [name, setName] = useState("");
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState(prefillCode);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

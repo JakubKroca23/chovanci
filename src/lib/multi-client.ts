@@ -1,8 +1,9 @@
 import PartySocket from "partysocket";
-import type { MatchState } from "./types";
+import type { MatchState, SituationPack } from "./types";
 
 export type ClientMsg =
   | { type: "join"; playerId: string; name: string }
+  | { type: "setPack"; pack: SituationPack }
   | { type: "start" }
   | { type: "play"; cardId: string }
   | { type: "next" };

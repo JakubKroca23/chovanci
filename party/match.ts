@@ -4,14 +4,17 @@ import {
   createLobby,
   joinLobby,
   rebindPlayer,
+  setPack,
   startMatch,
   submitPlay,
   advanceAfterVerdict,
 } from "../src/lib/match-machine";
 import { toMultiErrorCode } from "../src/lib/multi-errors";
+import type { SituationPack } from "../src/lib/types";
 
 type ClientMsg =
   | { type: "join"; playerId: string; name: string }
+  | { type: "setPack"; pack: SituationPack }
   | { type: "start" }
   | { type: "play"; cardId: string }
   | { type: "next" };
@@ -71,6 +74,13 @@ export default class MatchServer implements Party.Server {
           this.state = joinLobby(this.state, msg.playerId, msg.name);
         }
         sender.setState({ playerId: msg.playerId });
+        break;
+      }
+      case "setPack": {
+        if (!this.state) throw new Error("NO_LOBBY");
+        const playerId = sender.state?.playerId;
+        if (!playerId) throw new Error("JOIN_FIRST");
+        this.state = setPack(this.state, playerId, msg.pack);
         break;
       }
       case "start": {

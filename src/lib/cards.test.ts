@@ -16,6 +16,13 @@ describe("content packs", () => {
     expect(getSituations().length).toBeGreaterThanOrEqual(40);
   });
 
+  it("tags situations with packs", () => {
+    const packs = new Set(getSituations().map((s) => s.pack ?? "mix"));
+    expect(packs.has("prace")).toBe(true);
+    expect(packs.has("rodina")).toBe(true);
+    expect(packs.has("patek")).toBe(true);
+  });
+
   it("loads verdicts and a 3–5 question quiz", () => {
     expect(getVerdicts().length).toBeGreaterThanOrEqual(30);
     const quiz = getQuiz();

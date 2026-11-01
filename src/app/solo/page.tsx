@@ -9,11 +9,14 @@ import { VerdictBanner } from "@/components/VerdictBanner";
 import { getCard, getCards, getQuiz, getSituation } from "@/lib/cards";
 import { drawCard, pickSituationId, playCard, shuffle } from "@/lib/deck";
 import { judgeRound } from "@/lib/judge";
+import { packLabel, SITUATION_PACKS } from "@/lib/packs";
 import { scoreQuiz } from "@/lib/quiz";
+import { renderShareCardPng, shareOrDownloadPng } from "@/lib/share-card";
 import { loadHighScore, saveHighScore } from "@/lib/solo-storage";
+import type { SituationPack } from "@/lib/types";
 import "./solo.css";
 
-type Phase = "quiz" | "reveal-card" | "play" | "verdict" | "result";
+type Phase = "pack" | "quiz" | "reveal-card" | "play" | "verdict" | "result";
 
 type RoundOutcome = {
   playerCardId: string;
@@ -60,7 +63,8 @@ function buildOpeningHand(starterCardId: string, seed: string) {
 
 export default function SoloPage() {
   const quiz = useMemo(() => getQuiz(), []);
-  const [phase, setPhase] = useState<Phase>("quiz");
+  const [phase, setPhase] = useState<Phase>("pack");
+  const [pack, setPack] = useState<SituationPack>("mix");
   const [questionIndex, setQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [starterCardId, setStarterCardId] = useState<string | null>(null);
@@ -106,7 +110,7 @@ export default function SoloPage() {
     used: string[],
   ) {
     const seed = `solo:${nextStreak}:${nextRound}`;
-    const nextSituationId = pickSituationId(seed, used);
+    const nextSituationId = pickSituationId(seed, used, pack);
     setHand(nextHand);
     setDeck(nextDeck);
     setDiscard(nextDiscard);
@@ -212,35 +216,46 @@ export default function SoloPage() {
   }
 
   async function handleShare() {
-    const card = starterCardId ? getCard(starterCardId) : null;
+    if (!starterCardId) return;
+    const card = getCard(starterCardId);
     const verdict = outcome?.verdictText?.trim();
-    const parts = [
+    const text = [
       `V solo Chovancích jsem zvládl streak ${streak}!`,
-      card ? `Můj Chovanec: ${card.name}.` : null,
+      `Můj Chovanec: ${card.name}.`,
+      `Balíček: ${packLabel(pack)}.`,
       verdict ? `Verdikt: ${verdict}` : null,
-    ].filter(Boolean);
-    const text = parts.join(" ");
+      "https://chovanec.propoj.app",
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     try {
-      if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
-        await navigator.share({ title: "Chovanci — solo", text });
-        setShareNote("Sdíleno.");
-        return;
-      }
-      await navigator.clipboard.writeText(text);
-      setShareNote("Zkopírováno do schránky.");
+      const blob = await renderShareCardPng({
+        title: `Streak ${streak}`,
+        subtitle: `Rekord ${highScore} · ${packLabel(pack)}`,
+        cardId: starterCardId,
+        verdict,
+        footer: "chovanec.propoj.app",
+      });
+      const result = await shareOrDownloadPng(
+        blob,
+        `chovanci-solo-${streak}.png`,
+        text,
+      );
+      setShareNote(
+        result === "shared"
+          ? "Sdíleno."
+          : result === "copied"
+            ? "Obrázek stažen, text ve schránce."
+            : "Obrázek stažen.",
+      );
     } catch {
-      try {
-        await navigator.clipboard.writeText(text);
-        setShareNote("Zkopírováno do schránky.");
-      } catch {
-        setShareNote("Sdílení se nepovedlo.");
-      }
+      setShareNote("Sdílení obrázku se nepovedlo.");
     }
   }
 
   function handlePlayAgain() {
-    setPhase("quiz");
+    setPhase("pack");
     setQuestionIndex(0);
     setAnswers([]);
     setStarterCardId(null);
@@ -277,10 +292,40 @@ export default function SoloPage() {
         </p>
       </header>
 
+      {phase === "pack" && (
+        <section aria-live="polite">
+          <p className="solo__prompt">Vyber balíček situací</p>
+          <div className="pack-picker" role="group" aria-label="Balíček situací">
+            {SITUATION_PACKS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`pack-picker__btn${
+                  pack === item.id ? " pack-picker__btn--active" : ""
+                }`}
+                onClick={() => setPack(item.id)}
+              >
+                <strong>{item.label}</strong>
+                <span>{item.hint}</span>
+              </button>
+            ))}
+          </div>
+          <div className="solo__actions">
+            <button
+              type="button"
+              className="solo__btn solo__btn--green"
+              onClick={() => setPhase("quiz")}
+            >
+              Pokračovat ke kvízu
+            </button>
+          </div>
+        </section>
+      )}
+
       {phase === "quiz" && question && (
         <section aria-live="polite">
           <p className="solo__meta">
-            Otázka {questionIndex + 1} / {quiz.length}
+            Balíček: {packLabel(pack)} · Otázka {questionIndex + 1} / {quiz.length}
           </p>
           <p className="solo__prompt">{question.prompt}</p>
           <div className="solo__answers">

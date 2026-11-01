@@ -2,277 +2,771 @@
   {
     "id": "sit-01",
     "text": "Pondělní stand-up a ty jsi nic nedělal.",
-    "tags": ["prace", "preziti", "pochybnost"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "preziti",
+      "pochybnost"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-02",
     "text": "Rande, které už mělo skončit.",
-    "tags": ["romance", "ukryt", "formal"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "ukryt",
+      "formal"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-03",
     "text": "Auto hlásí check engine uprostřed nicoty.",
-    "tags": ["spinavy", "preziti", "prace"],
-    "mood": "crisis"
+    "tags": [
+      "spinavy",
+      "preziti",
+      "prace"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-04",
     "text": "Máma volá, že ‚jen na chvilku‘.",
-    "tags": ["detsky", "preziti", "formal"],
-    "mood": "family"
+    "tags": [
+      "detsky",
+      "preziti",
+      "formal"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-05",
     "text": "Nový požadavek 17:55 v pátek.",
-    "tags": ["prace", "chaos", "preziti"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-06",
     "text": "Na firemním večírku se spustí karaoke.",
-    "tags": ["styl", "nadseni", "chaos"],
-    "mood": "party"
+    "tags": [
+      "styl",
+      "nadseni",
+      "chaos"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-07",
     "text": "Soused se ptá, jestli jsi viděl jeho kočku. Ty jsi ji viděl. Včera. Jinak.",
-    "tags": ["ukryt", "konspirace", "pochybnost"],
-    "mood": "random"
+    "tags": [
+      "ukryt",
+      "konspirace",
+      "pochybnost"
+    ],
+    "mood": "random",
+    "pack": "mix"
   },
   {
     "id": "sit-08",
     "text": "Dítě se ptá, odkud se berou děti. U stolu je teta.",
-    "tags": ["detsky", "formal", "ukryt"],
-    "mood": "family"
+    "tags": [
+      "detsky",
+      "formal",
+      "ukryt"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-09",
     "text": "Wi-Fi spadne přesně při odesílání nabídky.",
-    "tags": ["prace", "chaos", "preziti"],
-    "mood": "crisis"
+    "tags": [
+      "prace",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-10",
     "text": "Ex ti napíše ‚ahoj, jak se máš?‘ ve 2:17.",
-    "tags": ["romance", "pochybnost", "ukryt"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "pochybnost",
+      "ukryt"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-11",
     "text": "Šéf chce ‚rychlý call‘. Call trvá 47 minut.",
-    "tags": ["prace", "formal", "preziti"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "formal",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-12",
     "text": "Na oslavě tě někdo představí jako ‚toho co dělá IT‘.",
-    "tags": ["styl", "prace", "pochybnost"],
-    "mood": "party"
+    "tags": [
+      "styl",
+      "prace",
+      "pochybnost"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-13",
     "text": "Pes přinese něco, co bys radši neviděl.",
-    "tags": ["pes", "spinavy", "chaos"],
-    "mood": "family"
+    "tags": [
+      "pes",
+      "spinavy",
+      "chaos"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-14",
     "text": "V metru se objeví člověk s megafonem a teorií.",
-    "tags": ["konspirace", "ukryt", "chaos"],
-    "mood": "random"
+    "tags": [
+      "konspirace",
+      "ukryt",
+      "chaos"
+    ],
+    "mood": "random",
+    "pack": "mix"
   },
   {
     "id": "sit-15",
     "text": "Musíš omluvit zpoždění — a důvod zní jako výmluva, protože to výmluva je.",
-    "tags": ["formal", "ukryt", "pochybnost"],
-    "mood": "work"
+    "tags": [
+      "formal",
+      "ukryt",
+      "pochybnost"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-16",
     "text": "Gril se vznítí. Hosté tleskají.",
-    "tags": ["chaos", "spinavy", "nadseni"],
-    "mood": "party"
+    "tags": [
+      "chaos",
+      "spinavy",
+      "nadseni"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-17",
     "text": "Partnerka se ptá: ‚A co bys na tom změnil?‘ — myslí vztah, ty myslíš byt.",
-    "tags": ["romance", "pochybnost", "formal"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "pochybnost",
+      "formal"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-18",
     "text": "Výpadek proudu. Lednice tiše umírá. Ty taky.",
-    "tags": ["preziti", "chaos", "spinavy"],
-    "mood": "crisis"
+    "tags": [
+      "preziti",
+      "chaos",
+      "spinavy"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-19",
     "text": "Rodinná večeře a strýc začíná o politice.",
-    "tags": ["formal", "rytir", "ukryt"],
-    "mood": "family"
+    "tags": [
+      "formal",
+      "rytir",
+      "ukryt"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-20",
     "text": "Review pull requestu od člověka, který kód nečetl.",
-    "tags": ["prace", "pochybnost", "formal"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "pochybnost",
+      "formal"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-21",
     "text": "Na chatě dojde toaleťák. Zůstává jedna rolka — a pět lidí.",
-    "tags": ["preziti", "chaos", "spinavy"],
-    "mood": "crisis"
+    "tags": [
+      "preziti",
+      "chaos",
+      "spinavy"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-22",
     "text": "Někdo ti na party řekne: ‚Ty jsi jiný než na fotkách.‘",
-    "tags": ["styl", "romance", "pochybnost"],
-    "mood": "party"
+    "tags": [
+      "styl",
+      "romance",
+      "pochybnost"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-23",
     "text": "Klient chce ‚jen drobnou úpravu‘. Úprava mění všechno.",
-    "tags": ["prace", "chaos", "preziti"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-24",
     "text": "Pes se rozhodne, že tvoje boty jsou večeře.",
-    "tags": ["pes", "spinavy", "detsky"],
-    "mood": "family"
+    "tags": [
+      "pes",
+      "spinavy",
+      "detsky"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-25",
     "text": "Váš group chat má 48 nepřečtených. Poslední zpráva: ‚???‘",
-    "tags": ["chaos", "ukryt", "pochybnost"],
-    "mood": "random"
+    "tags": [
+      "chaos",
+      "ukryt",
+      "pochybnost"
+    ],
+    "mood": "random",
+    "pack": "mix"
   },
   {
     "id": "sit-26",
     "text": "První rande v restauraci, kde nic neumíš vyslovit.",
-    "tags": ["romance", "formal", "nadseni"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "formal",
+      "nadseni"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-27",
     "text": "Alarm ve 3:00. Není to požár. Je to sousedova pizza.",
-    "tags": ["chaos", "preziti", "spinavy"],
-    "mood": "crisis"
+    "tags": [
+      "chaos",
+      "preziti",
+      "spinavy"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-28",
     "text": "Musíš přednést toast. Text nemáš. Odvahu taky ne.",
-    "tags": ["nadseni", "styl", "formal"],
-    "mood": "party"
+    "tags": [
+      "nadseni",
+      "styl",
+      "formal"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-29",
     "text": "Babička se ptá, kdy konečně ‚někoho přivedeš‘.",
-    "tags": ["romance", "ukryt", "formal"],
-    "mood": "family"
+    "tags": [
+      "romance",
+      "ukryt",
+      "formal"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-30",
     "text": "Nasazení v pátek. Co se může pokazit?",
-    "tags": ["prace", "chaos", "preziti"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-31",
     "text": "Někdo v autobuse hlasitě telefonuje o tvých soukromých věcech. Nejsou to tvoje. Zní to jako tvoje.",
-    "tags": ["ukryt", "konspirace", "chaos"],
-    "mood": "random"
+    "tags": [
+      "ukryt",
+      "konspirace",
+      "chaos"
+    ],
+    "mood": "random",
+    "pack": "mix"
   },
   {
     "id": "sit-32",
     "text": "Musíš vybrat film. Máte různé chutě. Obě strany mají pravdu. Obě strany se mýlí.",
-    "tags": ["romance", "pochybnost", "formal"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "pochybnost",
+      "formal"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-33",
     "text": "Dětský den na firmě. Ty jsi dospělý. Děti to vědí.",
-    "tags": ["detsky", "prace", "nadseni"],
-    "mood": "work"
+    "tags": [
+      "detsky",
+      "prace",
+      "nadseni"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-34",
     "text": "Výtah se zastaví mezi patry. S tebou je šéf.",
-    "tags": ["formal", "ukryt", "preziti"],
-    "mood": "crisis"
+    "tags": [
+      "formal",
+      "ukryt",
+      "preziti"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-35",
     "text": "Na festivalu zjistíš, že stan stojí v louži. A louže roste.",
-    "tags": ["preziti", "spinavy", "nadseni"],
-    "mood": "party"
+    "tags": [
+      "preziti",
+      "spinavy",
+      "nadseni"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-36",
     "text": "Sestra tě žádá o hlídání. ‚Je to jednoduché.‘ Není.",
-    "tags": ["detsky", "chaos", "preziti"],
-    "mood": "family"
+    "tags": [
+      "detsky",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-37",
     "text": "Někdo na LinkedIn tě označí jako ‚myšlenkového lídra‘. Ty víš, že nejsi.",
-    "tags": ["styl", "pochybnost", "prace"],
-    "mood": "work"
+    "tags": [
+      "styl",
+      "pochybnost",
+      "prace"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-38",
     "text": "Hrdina večera musí donést další bednu. Ty jsi hrdina večera.",
-    "tags": ["rytir", "nadseni", "chaos"],
-    "mood": "party"
+    "tags": [
+      "rytir",
+      "nadseni",
+      "chaos"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-39",
     "text": "Zjistíš, že tvůj účet na sociální síti existuje dvakrát. Ten druhý není tvůj. Nebo je?",
-    "tags": ["konspirace", "pochybnost", "ukryt"],
-    "mood": "random"
+    "tags": [
+      "konspirace",
+      "pochybnost",
+      "ukryt"
+    ],
+    "mood": "random",
+    "pack": "mix"
   },
   {
     "id": "sit-40",
     "text": "Ráno po večírku: někdo spí na gauči. Nevíš kdo. Ani on.",
-    "tags": ["chaos", "spinavy", "preziti"],
-    "mood": "party"
+    "tags": [
+      "chaos",
+      "spinavy",
+      "preziti"
+    ],
+    "mood": "party",
+    "pack": "patek"
   },
   {
     "id": "sit-41",
     "text": "Musíš přiznat, že jsi snědl poslední dort. Důkazy jsou na tváři.",
-    "tags": ["detsky", "ukryt", "spinavy"],
-    "mood": "family"
+    "tags": [
+      "detsky",
+      "ukryt",
+      "spinavy"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-42",
     "text": "Termín byl ‚včera‘. Ty jsi ‚zítra‘.",
-    "tags": ["prace", "preziti", "chaos"],
-    "mood": "work"
+    "tags": [
+      "prace",
+      "preziti",
+      "chaos"
+    ],
+    "mood": "work",
+    "pack": "prace"
   },
   {
     "id": "sit-43",
     "text": "Partner chce ‚upřímný názor‘ na nový účes. Účes je… odvážný.",
-    "tags": ["romance", "formal", "rytir"],
-    "mood": "love"
+    "tags": [
+      "romance",
+      "formal",
+      "rytir"
+    ],
+    "mood": "love",
+    "pack": "mix"
   },
   {
     "id": "sit-44",
     "text": "V lese se ztratíš. Mapa říká, že jsi u jezera. Jezero není.",
-    "tags": ["preziti", "konspirace", "pochybnost"],
-    "mood": "crisis"
+    "tags": [
+      "preziti",
+      "konspirace",
+      "pochybnost"
+    ],
+    "mood": "crisis",
+    "pack": "mix"
   },
   {
     "id": "sit-45",
     "text": "Pes rozhodne, kdo je alfa. Ty nejsi alfa.",
-    "tags": ["pes", "rytir", "detsky"],
-    "mood": "family"
+    "tags": [
+      "pes",
+      "rytir",
+      "detsky"
+    ],
+    "mood": "family",
+    "pack": "rodina"
   },
   {
     "id": "sit-46",
     "text": "Nic dramatického se neděje. Přesto musíš zvolit, jak to vezmeš.",
-    "tags": ["zaklad", "preziti", "pochybnost"],
-    "mood": "random"
+    "tags": [
+      "zaklad",
+      "preziti",
+      "pochybnost"
+    ],
+    "mood": "random",
+    "pack": "mix"
+  },
+  {
+    "id": "sit-pack-prace-01",
+    "text": "Šéf napíše „rychlá otázka“ a pak následuje 14 odstavců.",
+    "tags": [
+      "prace",
+      "pochybnost",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-02",
+    "text": "Meeting, který měl trvat 15 minut. Je to hodina.",
+    "tags": [
+      "prace",
+      "formal",
+      "preziti"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-03",
+    "text": "Slack notifikace: „Urgent. Ale ne teď. Zítra ráno. Možná.“",
+    "tags": [
+      "prace",
+      "chaos",
+      "pochybnost"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-04",
+    "text": "Musíš prezentovat před lidmi, co to stejně neposlouchají.",
+    "tags": [
+      "prace",
+      "styl",
+      "formal"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-05",
+    "text": "Notebook umře přesně při share screen.",
+    "tags": [
+      "prace",
+      "chaos",
+      "spinavy"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-06",
+    "text": "HR chce „rychlý feedback“ na kolegu. Veřejně.",
+    "tags": [
+      "prace",
+      "ukryt",
+      "formal"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-07",
+    "text": "Hotfix: „Proč to nejde?“ Odpověď: „Protože to nikdo nenapsal.“",
+    "tags": [
+      "prace",
+      "pochybnost",
+      "chaos"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-prace-08",
+    "text": "Dostaneš kalendářovou pozvánku na „sync“ v 7:45.",
+    "tags": [
+      "prace",
+      "preziti",
+      "rytir"
+    ],
+    "mood": "work",
+    "pack": "prace"
+  },
+  {
+    "id": "sit-pack-rodina-01",
+    "text": "Rodinná večeře a otázka: „A kdy už konečně…?“",
+    "tags": [
+      "formal",
+      "preziti",
+      "pochybnost"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-02",
+    "text": "Bratranec chce „jen poradit s podnikáním“. Na dvě hodiny.",
+    "tags": [
+      "prace",
+      "formal",
+      "chaos"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-03",
+    "text": "Babička ti posílá hádanku přes Messenger. Je to dezinfo.",
+    "tags": [
+      "konspirace",
+      "detsky",
+      "preziti"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-04",
+    "text": "Vánoční stůl, 12 lidí, jedno téma: tvoje práce.",
+    "tags": [
+      "formal",
+      "prace",
+      "ukryt"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-05",
+    "text": "Sourozenec: „Pohlídáš děti. Je to legrace.“",
+    "tags": [
+      "detsky",
+      "preziti",
+      "chaos"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-06",
+    "text": "Táta opravuje něco, co fungovalo. Teď nefunguje.",
+    "tags": [
+      "spinavy",
+      "prace",
+      "preziti"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-07",
+    "text": "Musíš říct ne tetě, která už nese dort.",
+    "tags": [
+      "formal",
+      "rytir",
+      "romance"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-rodina-08",
+    "text": "Group chat rodiny exploduje kvůli fotce z dovolené z roku 2011.",
+    "tags": [
+      "chaos",
+      "nadseni",
+      "detsky"
+    ],
+    "mood": "family",
+    "pack": "rodina"
+  },
+  {
+    "id": "sit-pack-patek-01",
+    "text": "Pátek 16:40 a někdo navrhne „ještě jeden call“.",
+    "tags": [
+      "prace",
+      "chaos",
+      "preziti"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-02",
+    "text": "První pivo. Druhé. Plán na sobotu už neexistuje.",
+    "tags": [
+      "chaos",
+      "nadseni",
+      "styl"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-03",
+    "text": "Afterparty: „Jdeme ještě někam?“ Je 1:40.",
+    "tags": [
+      "chaos",
+      "styl",
+      "preziti"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-04",
+    "text": "DJ pustí song, u kterého musíš předstírat, že ho znáš.",
+    "tags": [
+      "styl",
+      "nadseni",
+      "ukryt"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-05",
+    "text": "Kameraman večíku míří přímo na tebe. Nejsi připravený.",
+    "tags": [
+      "styl",
+      "ukryt",
+      "chaos"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-06",
+    "text": "Uber říká 18 minut. Venku prší. Boty jsou špatné.",
+    "tags": [
+      "preziti",
+      "spinavy",
+      "pochybnost"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-07",
+    "text": "Někdo objedná další kolo „pro všechny“. Platíš ty.",
+    "tags": [
+      "chaos",
+      "formal",
+      "preziti"
+    ],
+    "mood": "party",
+    "pack": "patek"
+  },
+  {
+    "id": "sit-pack-patek-08",
+    "text": "Sobotní ráno. Hlava. Notifikace z práce. Ignorovat?",
+    "tags": [
+      "preziti",
+      "prace",
+      "pochybnost"
+    ],
+    "mood": "party",
+    "pack": "patek"
   }
 ]

@@ -6,8 +6,9 @@ import {
   drawCard,
   pickSituationId,
   handSizeFor,
+  situationIdsForPack,
 } from "./deck";
-import { getCards } from "./cards";
+import { getCards, getSituations } from "./cards";
 
 describe("deck", () => {
   it("shuffle is deterministic", () => {
@@ -72,5 +73,17 @@ describe("deck", () => {
     const first = pickSituationId("room", []);
     const second = pickSituationId("room", [first]);
     expect(second).not.toBe(first);
+  });
+});
+
+describe("situation packs", () => {
+  it("filters situation ids by pack", () => {
+    const prace = situationIdsForPack("prace");
+    expect(prace.length).toBeGreaterThan(0);
+    for (const id of prace) {
+      const sit = getSituations().find((s) => s.id === id)!;
+      expect(sit.pack).toBe("prace");
+    }
+    expect(situationIdsForPack("mix").length).toBe(getSituations().length);
   });
 });

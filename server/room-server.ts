@@ -9,15 +9,17 @@ import {
   createLobby,
   joinLobby,
   rebindPlayer,
+  setPack,
   startMatch,
   submitPlay,
   advanceAfterVerdict,
 } from "../src/lib/match-machine";
 import { toMultiErrorCode } from "../src/lib/multi-errors";
-import type { MatchState } from "../src/lib/types";
+import type { MatchState, SituationPack } from "../src/lib/types";
 
 type ClientMsg =
   | { type: "join"; playerId: string; name: string }
+  | { type: "setPack"; pack: SituationPack }
   | { type: "start" }
   | { type: "play"; cardId: string }
   | { type: "next" };
@@ -73,6 +75,12 @@ function handle(msg: ClientMsg, ws: WebSocket, roomCode: string) {
       }
       conn.playerId = msg.playerId;
       meta.set(ws, conn);
+      break;
+    }
+    case "setPack": {
+      if (!room.state) throw new Error("NO_LOBBY");
+      if (!conn.playerId) throw new Error("JOIN_FIRST");
+      room.state = setPack(room.state, conn.playerId, msg.pack);
       break;
     }
     case "start": {

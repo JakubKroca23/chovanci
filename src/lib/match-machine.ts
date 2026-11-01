@@ -7,7 +7,7 @@ import {
 } from "./deck";
 import { judgeRound } from "./judge";
 import { getSituation } from "./cards";
-import type { MatchState } from "./types";
+import type { MatchState, SituationPack } from "./types";
 
 export function createLobby(
   code: string,
@@ -20,6 +20,7 @@ export function createLobby(
     players: [{ id: hostId, name: hostName, score: 0 }],
     round: 0,
     phase: "lobby",
+    pack: "mix",
     situationId: null,
     usedSituationIds: [],
     plays: {},
@@ -29,6 +30,20 @@ export function createLobby(
     deck: [],
     discard: [],
   };
+}
+
+export function setPack(
+  state: MatchState,
+  hostId: string,
+  pack: SituationPack,
+): MatchState {
+  if (state.phase !== "lobby") {
+    throw new Error("Match already started");
+  }
+  if (state.hostId !== hostId) {
+    throw new Error("Only host can start");
+  }
+  return { ...state, pack };
 }
 
 export function joinLobby(
@@ -69,9 +84,11 @@ export function startMatch(state: MatchState, seed: string): MatchState {
   }
   const playerIds = state.players.map((p) => p.id);
   const { hands, deck } = dealHands(playerIds, seed);
-  const situationId = pickSituationId(seed, []);
+  const pack = state.pack ?? "mix";
+  const situationId = pickSituationId(seed, [], pack);
   return {
     ...state,
+    pack,
     round: 1,
     phase: "pick",
     situationId,
@@ -179,10 +196,12 @@ export function advanceAfterVerdict(
 
   const nextRound = state.round + 1;
   const used = [...state.usedSituationIds];
-  const situationId = pickSituationId(seed, used);
+  const pack = state.pack ?? "mix";
+  const situationId = pickSituationId(seed, used, pack);
 
   return {
     ...state,
+    pack,
     round: nextRound,
     phase: "pick",
     situationId,

@@ -25,11 +25,15 @@ export type Card = {
   tags: CardTag[];
 };
 
+export type SituationPack = "mix" | "prace" | "rodina" | "patek";
+
 export type Situation = {
   id: string;
   text: string;
   tags: CardTag[];
   mood?: "work" | "party" | "crisis" | "love" | "family" | "random";
+  /** Content pack. Mode `mix` draws from all packs. */
+  pack?: SituationPack;
 };
 
 export type VerdictLine = {
@@ -64,6 +68,8 @@ export type MatchState = {
   players: MatchPlayer[];
   round: number;
   phase: MatchPhase;
+  /** Selected situation pack for this match. */
+  pack: SituationPack;
   situationId: string | null;
   /** Situation ids already used this match (anti-repeat across rounds). */
   usedSituationIds: string[];

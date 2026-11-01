@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { CardView } from "@/components/CardView";
 import { HandPicker } from "@/components/HandPicker";
+import { JoinInvite } from "@/components/JoinInvite";
 import { ScoreBoard } from "@/components/ScoreBoard";
 import { SituationBanner } from "@/components/SituationBanner";
 import { VerdictBanner } from "@/components/VerdictBanner";
@@ -16,8 +17,10 @@ import {
   type MatchConnection,
 } from "@/lib/multi-client";
 import { multiErrorCs } from "@/lib/multi-errors";
+import { packLabel, SITUATION_PACKS } from "@/lib/packs";
+import { renderShareCardPng, shareOrDownloadPng } from "@/lib/share-card";
 import { finaleTitle } from "@/lib/titles";
-import type { MatchState } from "@/lib/types";
+import type { MatchState, SituationPack } from "@/lib/types";
 import "../multi.css";
 
 function MultiRoomInner() {
@@ -38,6 +41,14 @@ function MultiRoomInner() {
   const [connected, setConnected] = useState(false);
   const [reconnecting, setReconnecting] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [shareNote, setShareNote] = useState<string | null>(null);
+
+  const joinUrl = useMemo(() => {
+    if (typeof window === "undefined") {
+      return `https://chovanec.propoj.app/multi?mode=join&code=${code}`;
+    }
+    return `${window.location.origin}/multi?mode=join&code=${code}`;
+  }, [code]);
 
   useEffect(() => {
     setPlayerId(getOrCreatePlayerId());
@@ -216,8 +227,10 @@ function MultiRoomInner() {
 
       {match?.phase === "lobby" && (
         <section aria-live="polite">
+          <JoinInvite code={code} joinUrl={joinUrl} />
           <p className="multi__hint">
-            Hráči {match.players.length} / 6 (start od 2)
+            Hráči {match.players.length} / 6 (start od 2) · Balíček:{" "}
+            {packLabel(match.pack ?? "mix")}
           </p>
           {match.players.length === 0 ? (
             <p className="multi__waiting">Zatím nikdo v lobby…</p>
@@ -237,20 +250,46 @@ function MultiRoomInner() {
             </ul>
           )}
           {isHost ? (
-            <div className="multi__actions">
-              <button
-                type="button"
-                className="multi__btn multi__btn--green"
-                disabled={
-                  busy ||
-                  match.players.length < 2 ||
-                  match.players.length > 6
-                }
-                onClick={() => sendOnce({ type: "start" })}
-              >
-                Spustit hru
-              </button>
-            </div>
+            <>
+              <p className="multi__hint">Balíček situací</p>
+              <div className="pack-picker" role="group" aria-label="Balíček situací">
+                {SITUATION_PACKS.map((pack) => (
+                  <button
+                    key={pack.id}
+                    type="button"
+                    className={`pack-picker__btn${
+                      (match.pack ?? "mix") === pack.id
+                        ? " pack-picker__btn--active"
+                        : ""
+                    }`}
+                    disabled={busy}
+                    onClick={() =>
+                      sendOnce({
+                        type: "setPack",
+                        pack: pack.id as SituationPack,
+                      })
+                    }
+                  >
+                    <strong>{pack.label}</strong>
+                    <span>{pack.hint}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="multi__actions">
+                <button
+                  type="button"
+                  className="multi__btn multi__btn--green"
+                  disabled={
+                    busy ||
+                    match.players.length < 2 ||
+                    match.players.length > 6
+                  }
+                  onClick={() => sendOnce({ type: "start" })}
+                >
+                  Spustit hru
+                </button>
+              </div>
+            </>
           ) : (
             <p className="multi__waiting">Čekáme na start od hostitele…</p>
           )}
@@ -348,10 +387,45 @@ function MultiRoomInner() {
           </div>
           <ScoreBoard players={match.players} />
           <div className="multi__actions">
+            {leaderCardId && (
+              <button
+                type="button"
+                className="multi__btn multi__btn--green"
+                onClick={async () => {
+                  try {
+                    const title = finaleTitle(leader.name, leaderCardId);
+                    const blob = await renderShareCardPng({
+                      title,
+                      subtitle: `Kód ${code} · ${packLabel(match.pack ?? "mix")}`,
+                      cardId: leaderCardId,
+                      verdict: match.verdictText ?? undefined,
+                      footer: "chovanec.propoj.app",
+                    });
+                    const result = await shareOrDownloadPng(
+                      blob,
+                      `chovanci-${code}.png`,
+                      title,
+                    );
+                    setShareNote(
+                      result === "shared"
+                        ? "Sdíleno."
+                        : result === "copied"
+                          ? "Obrázek stažen, text ve schránce."
+                          : "Obrázek stažen.",
+                    );
+                  } catch {
+                    setShareNote("Sdílení obrázku se nepovedlo.");
+                  }
+                }}
+              >
+                Sdílet obrázek
+              </button>
+            )}
             <Link className="multi__btn multi__btn--secondary" href="/">
               Domů
             </Link>
           </div>
+          {shareNote && <p className="multi__hint">{shareNote}</p>}
         </section>
       )}
     </main>

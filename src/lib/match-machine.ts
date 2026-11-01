@@ -21,6 +21,7 @@ export function createLobby(
     round: 0,
     phase: "lobby",
     situationId: null,
+    usedSituationIds: [],
     plays: {},
     winnerId: null,
     verdictText: null,
@@ -50,6 +51,14 @@ export function joinLobby(
   };
 }
 
+/** Validate that playerId is already in the match (reconnect / refresh). */
+export function rebindPlayer(state: MatchState, playerId: string): MatchState {
+  if (!state.players.some((p) => p.id === playerId)) {
+    throw new Error("Unknown player");
+  }
+  return state;
+}
+
 export function startMatch(state: MatchState, seed: string): MatchState {
   if (state.phase !== "lobby") {
     throw new Error("Match already started");
@@ -66,6 +75,7 @@ export function startMatch(state: MatchState, seed: string): MatchState {
     round: 1,
     phase: "pick",
     situationId,
+    usedSituationIds: [situationId],
     plays: {},
     winnerId: null,
     verdictText: null,
@@ -168,7 +178,7 @@ export function advanceAfterVerdict(
   }
 
   const nextRound = state.round + 1;
-  const used = state.situationId ? [state.situationId] : [];
+  const used = [...state.usedSituationIds];
   const situationId = pickSituationId(seed, used);
 
   return {
@@ -176,6 +186,7 @@ export function advanceAfterVerdict(
     round: nextRound,
     phase: "pick",
     situationId,
+    usedSituationIds: [...used, situationId],
     plays: {},
     winnerId: null,
     verdictText: null,

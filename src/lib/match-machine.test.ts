@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   createLobby,
   joinLobby,
+  rebindPlayer,
   startMatch,
   submitPlay,
   advanceAfterVerdict,
@@ -18,6 +19,7 @@ describe("match-machine", () => {
     expect(state.hostId).toBe("host");
     expect(state.players).toEqual([{ id: "host", name: "Host", score: 0 }]);
     expect(state.round).toBe(0);
+    expect(state.usedSituationIds).toEqual([]);
   });
 
   it("joinLobby adds players and rejects duplicates / over 6", () => {
@@ -35,6 +37,17 @@ describe("match-machine", () => {
     expect(() => joinLobby(state, "p7", "Seven")).toThrow();
   });
 
+  it("rebindPlayer succeeds for known player mid-pick and throws for unknown", () => {
+    let state = createLobby("RBND", "p1", "One");
+    state = joinLobby(state, "p2", "Two");
+    state = startMatch(state, "RBND:1");
+    expect(state.phase).toBe("pick");
+
+    expect(rebindPlayer(state, "p1")).toBe(state);
+    expect(rebindPlayer(state, "p2")).toEqual(state);
+    expect(() => rebindPlayer(state, "ghost")).toThrow(/Unknown player/);
+  });
+
   it("startMatch requires 2–6 players, deals hands, picks situation", () => {
     const alone = createLobby("ABCD", "p1", "One");
     expect(() => startMatch(alone, "ABCD:1")).toThrow();
@@ -44,6 +57,7 @@ describe("match-machine", () => {
     expect(state.phase).toBe("pick");
     expect(state.round).toBe(1);
     expect(state.situationId).toBeTruthy();
+    expect(state.usedSituationIds).toEqual([state.situationId]);
     expect(state.hands.p1).toHaveLength(4);
     expect(state.hands.p2).toHaveLength(4);
     expect(new Set([...state.hands.p1, ...state.hands.p2]).size).toBe(8);
@@ -109,12 +123,17 @@ describe("match-machine", () => {
       if (round < 5) {
         expect(state.phase).toBe("verdict");
         expect(state.round).toBe(round);
+        const beforeUsed = [...state.usedSituationIds];
         state = advanceAfterVerdict(state, `ZZZZ:${round + 1}`);
         expect(state.phase).toBe("pick");
         expect(state.round).toBe(round + 1);
         expect(state.plays).toEqual({});
         expect(state.winnerId).toBeNull();
         expect(state.verdictText).toBeNull();
+        expect(state.usedSituationIds).toHaveLength(beforeUsed.length + 1);
+        expect(state.usedSituationIds.slice(0, -1)).toEqual(beforeUsed);
+        expect(beforeUsed).not.toContain(state.situationId);
+        expect(state.usedSituationIds.at(-1)).toBe(state.situationId);
         for (const p of state.players) {
           expect(state.hands[p.id]).toHaveLength(4);
         }
@@ -127,5 +146,9 @@ describe("match-machine", () => {
         expect(noop.phase).toBe("final");
       }
     }
+
+    // Full match: five distinct used situation ids
+    expect(state.usedSituationIds).toHaveLength(5);
+    expect(new Set(state.usedSituationIds).size).toBe(5);
   });
 });

@@ -65,6 +65,8 @@ export type MatchState = {
   round: number;
   phase: MatchPhase;
   situationId: string | null;
+  /** Situation ids already used this match (anti-repeat across rounds). */
+  usedSituationIds: string[];
   plays: Record<string, string>;
   winnerId: string | null;
   verdictText: string | null;

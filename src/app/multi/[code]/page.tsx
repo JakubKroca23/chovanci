@@ -15,6 +15,7 @@ import {
   getOrCreatePlayerId,
   type MatchConnection,
 } from "@/lib/multi-client";
+import { multiErrorCs } from "@/lib/multi-errors";
 import { finaleTitle } from "@/lib/titles";
 import type { MatchState } from "@/lib/types";
 import "../multi.css";
@@ -46,7 +47,6 @@ function MultiRoomInner() {
     if (!code || code.length !== 4 || !name || !playerId) return;
 
     let alive = true;
-    let joined = false;
     let sawOpen = false;
     let hardCloseTimer: number | undefined;
     const connection = connectToMatch(code);
@@ -62,6 +62,10 @@ function MultiRoomInner() {
       }
     };
 
+    const rebind = () => {
+      connection.send({ type: "join", playerId, name });
+    };
+
     const unsub = connection.subscribe((msg) => {
       if (!alive) return;
 
@@ -72,6 +76,8 @@ function MultiRoomInner() {
           setConnected(true);
           setReconnecting(false);
           setError(null);
+          // Always rebind on every open (initial connect + PartySocket reconnect).
+          rebind();
           return;
         }
         setConnected(false);
@@ -95,11 +101,11 @@ function MultiRoomInner() {
       }
 
       if ("type" in msg && msg.type === "error") {
-        if (/duplicate/i.test(msg.message)) {
-          joined = true;
-          return;
-        }
-        setError(msg.message);
+        const codeOrMsg =
+          "code" in msg && typeof msg.code === "string" && msg.code
+            ? msg.code
+            : msg.message;
+        setError(multiErrorCs(codeOrMsg));
         setBusy(false);
         return;
       }
@@ -108,19 +114,7 @@ function MultiRoomInner() {
       setMatch(state);
       setError(null);
       setBusy(false);
-      if (state.players.some((p) => p.id === playerId)) {
-        joined = true;
-      }
     });
-
-    const joinOnce = () => {
-      if (!alive || joined) return;
-      joined = true;
-      connection.send({ type: "join", playerId, name });
-    };
-
-    // Let onConnect state arrive first on reconnect; then join if needed.
-    const timer = window.setTimeout(joinOnce, 120);
 
     // If the socket never opens, surface a Czech error instead of spinning forever.
     const connectWatch = window.setTimeout(() => {
@@ -132,7 +126,6 @@ function MultiRoomInner() {
 
     return () => {
       alive = false;
-      window.clearTimeout(timer);
       window.clearTimeout(connectWatch);
       clearHardCloseTimer();
       unsub();

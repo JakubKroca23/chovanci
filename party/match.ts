@@ -3,10 +3,12 @@ import type { MatchState } from "../src/lib/types";
 import {
   createLobby,
   joinLobby,
+  rebindPlayer,
   startMatch,
   submitPlay,
   advanceAfterVerdict,
 } from "../src/lib/match-machine";
+import { toMultiErrorCode } from "../src/lib/multi-errors";
 
 type ClientMsg =
   | { type: "join"; playerId: string; name: string }
@@ -38,10 +40,13 @@ export default class MatchServer implements Party.Server {
     try {
       this.handle(msg, sender);
     } catch (err) {
+      const raw = err instanceof Error ? err.message : "Unknown error";
+      const code = toMultiErrorCode(raw);
       sender.send(
         JSON.stringify({
           type: "error",
-          message: err instanceof Error ? err.message : "Unknown error",
+          code,
+          message: code,
         }),
       );
       return;
@@ -59,6 +64,9 @@ export default class MatchServer implements Party.Server {
       case "join": {
         if (!this.state) {
           this.state = createLobby(code, msg.playerId, msg.name);
+        } else if (this.state.players.some((p) => p.id === msg.playerId)) {
+          // Mid-match / lobby reconnect: re-bind connection → playerId.
+          rebindPlayer(this.state, msg.playerId);
         } else {
           this.state = joinLobby(this.state, msg.playerId, msg.name);
         }
@@ -66,23 +74,23 @@ export default class MatchServer implements Party.Server {
         break;
       }
       case "start": {
-        if (!this.state) throw new Error("No lobby");
+        if (!this.state) throw new Error("NO_LOBBY");
         const playerId = sender.state?.playerId;
         if (!playerId || playerId !== this.state.hostId) {
-          throw new Error("Only host can start");
+          throw new Error("ONLY_HOST");
         }
         this.state = startMatch(this.state, `${code}:1`);
         break;
       }
       case "play": {
-        if (!this.state) throw new Error("No match");
+        if (!this.state) throw new Error("NO_MATCH");
         const playerId = sender.state?.playerId;
-        if (!playerId) throw new Error("Join first");
+        if (!playerId) throw new Error("JOIN_FIRST");
         this.state = submitPlay(this.state, playerId, msg.cardId);
         break;
       }
       case "next": {
-        if (!this.state) throw new Error("No match");
+        if (!this.state) throw new Error("NO_MATCH");
         const nextRound = this.state.round + 1;
         this.state = advanceAfterVerdict(
           this.state,

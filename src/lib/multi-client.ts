@@ -7,7 +7,11 @@ export type ClientMsg =
   | { type: "play"; cardId: string }
   | { type: "next" };
 
-export type ServerError = { type: "error"; message: string };
+export type ServerError = {
+  type: "error";
+  message: string;
+  code?: string;
+};
 
 export type ConnectionEvent =
   | { type: "connection"; status: "open" }
@@ -80,6 +84,7 @@ export function connectToMatch(code: string): MatchConnection {
   });
 
   const listeners = new Set<(msg: MatchMessage) => void>();
+  let isOpen = false;
 
   const emit = (msg: MatchMessage) => {
     for (const cb of listeners) cb(msg);
@@ -98,6 +103,7 @@ export function connectToMatch(code: string): MatchConnection {
   };
 
   const onOpen = () => {
+    isOpen = true;
     emit({ type: "connection", status: "open" });
   };
 
@@ -106,6 +112,7 @@ export function connectToMatch(code: string): MatchConnection {
   };
 
   const onClose = () => {
+    isOpen = false;
     // Soft signal only — UI decides whether a transient close becomes a hard error.
     emit({ type: "connection", status: "closed" });
   };
@@ -121,6 +128,10 @@ export function connectToMatch(code: string): MatchConnection {
     },
     subscribe(cb: (msg: MatchMessage) => void) {
       listeners.add(cb);
+      // Replay open if the socket already connected before subscribe.
+      if (isOpen) {
+        cb({ type: "connection", status: "open" });
+      }
       return () => {
         listeners.delete(cb);
       };

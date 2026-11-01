@@ -8,7 +8,9 @@
 }
 
 .solo__back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 600;
   color: var(--accent-blue);
 }
@@ -58,6 +60,7 @@
 .solo__answer {
   display: block;
   width: 100%;
+  min-height: 44px;
   text-align: left;
   padding: 0.9rem 1rem;
   border-radius: 0.9rem;
@@ -69,9 +72,14 @@
   cursor: pointer;
 }
 
-.solo__answer:active {
+.solo__answer:active:not(:disabled) {
   transform: translateY(2px);
   box-shadow: 0 2px 0 color-mix(in srgb, var(--foreground) 18%, transparent);
+}
+
+.solo__answer:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .solo__center {
@@ -103,8 +111,11 @@
 }
 
 .solo__btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  min-height: 44px;
   text-align: center;
   padding: 0.9rem 1rem;
   border-radius: 999px;

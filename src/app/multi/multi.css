@@ -8,7 +8,9 @@
 }
 
 .multi__back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   font-weight: 600;
   color: var(--accent-blue);
 }
@@ -53,6 +55,7 @@
 
 .multi__input {
   width: 100%;
+  min-height: 44px;
   padding: 0.85rem 0.95rem;
   border-radius: 0.85rem;
   border: 2px solid var(--foreground);
@@ -74,8 +77,11 @@
 }
 
 .multi__btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  min-height: 44px;
   text-align: center;
   padding: 0.9rem 1rem;
   border-radius: 999px;

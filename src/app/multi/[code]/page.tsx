@@ -34,6 +34,7 @@ function MultiRoomInner() {
   const [match, setMatch] = useState<MatchState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     setPlayerId(getOrCreatePlayerId());
@@ -44,12 +45,28 @@ function MultiRoomInner() {
 
     let alive = true;
     let joined = false;
+    let sawOpen = false;
     const connection = connectToMatch(code);
     setConn(connection);
-    setConnected(true);
+    setConnected(false);
+    setBusy(false);
 
     const unsub = connection.subscribe((msg) => {
       if (!alive) return;
+
+      if ("type" in msg && msg.type === "connection") {
+        if (msg.status === "open") {
+          sawOpen = true;
+          setConnected(true);
+          setError(null);
+          return;
+        }
+        setConnected(false);
+        if (msg.status === "error" || msg.status === "closed") {
+          setError(msg.message);
+        }
+        return;
+      }
 
       if ("type" in msg && msg.type === "error") {
         if (/duplicate/i.test(msg.message)) {
@@ -57,12 +74,14 @@ function MultiRoomInner() {
           return;
         }
         setError(msg.message);
+        setBusy(false);
         return;
       }
 
       const state = msg as MatchState;
       setMatch(state);
       setError(null);
+      setBusy(false);
       if (state.players.some((p) => p.id === playerId)) {
         joined = true;
       }
@@ -77,9 +96,19 @@ function MultiRoomInner() {
     // Let onConnect state arrive first on reconnect; then join if needed.
     const timer = window.setTimeout(joinOnce, 120);
 
+    // If the socket never opens, surface a Czech error instead of spinning forever.
+    const connectWatch = window.setTimeout(() => {
+      if (!alive || sawOpen) return;
+      setConnected(false);
+      setError(
+        "Spojení s místností selhalo. Zkontroluj PartyKit (npx partykit dev) a obnov stránku.",
+      );
+    }, 8000);
+
     return () => {
       alive = false;
       window.clearTimeout(timer);
+      window.clearTimeout(connectWatch);
       unsub();
       connection.close();
       setConn(null);
@@ -108,6 +137,14 @@ function MultiRoomInner() {
     if (!match || !leader) return null;
     return match.plays[leader.id] ?? match.hands[leader.id]?.[0] ?? null;
   }, [match, leader]);
+
+  function sendOnce(
+    msg: Parameters<NonNullable<typeof conn>["send"]>[0],
+  ) {
+    if (!conn || busy) return;
+    setBusy(true);
+    conn.send(msg);
+  }
 
   if (!name) {
     return (
@@ -158,26 +195,34 @@ function MultiRoomInner() {
           <p className="multi__hint">
             Hráči {match.players.length} / 6 (start od 2)
           </p>
-          <ul className="multi__players">
-            {match.players.map((player) => (
-              <li key={player.id} className="multi__player">
-                <span>
-                  {player.name}
-                  {player.id === playerId ? " (ty)" : ""}
-                </span>
-                {player.id === match.hostId ? (
-                  <span className="multi__player-tag">host</span>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          {match.players.length === 0 ? (
+            <p className="multi__waiting">Zatím nikdo v lobby…</p>
+          ) : (
+            <ul className="multi__players">
+              {match.players.map((player) => (
+                <li key={player.id} className="multi__player">
+                  <span>
+                    {player.name}
+                    {player.id === playerId ? " (ty)" : ""}
+                  </span>
+                  {player.id === match.hostId ? (
+                    <span className="multi__player-tag">host</span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
           {isHost ? (
             <div className="multi__actions">
               <button
                 type="button"
                 className="multi__btn multi__btn--green"
-                disabled={match.players.length < 2 || match.players.length > 6}
-                onClick={() => conn?.send({ type: "start" })}
+                disabled={
+                  busy ||
+                  match.players.length < 2 ||
+                  match.players.length > 6
+                }
+                onClick={() => sendOnce({ type: "start" })}
               >
                 Start
               </button>
@@ -199,8 +244,8 @@ function MultiRoomInner() {
               <p className="multi__hint">Vyber kartu z ruky.</p>
               <HandPicker
                 cardIds={myHand}
-                disabled={alreadyPlayed}
-                onPick={(cardId) => conn?.send({ type: "play", cardId })}
+                disabled={alreadyPlayed || busy}
+                onPick={(cardId) => sendOnce({ type: "play", cardId })}
               />
             </>
           )}
@@ -238,7 +283,8 @@ function MultiRoomInner() {
               <button
                 type="button"
                 className="multi__btn"
-                onClick={() => conn?.send({ type: "next" })}
+                disabled={busy}
+                onClick={() => sendOnce({ type: "next" })}
               >
                 Další kolo
               </button>

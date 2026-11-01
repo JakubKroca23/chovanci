@@ -14,6 +14,7 @@ function MultiEntryInner() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const title = useMemo(
     () => (mode === "join" ? "Připojit se" : "Vytvořit místnost"),
@@ -22,6 +23,7 @@ function MultiEntryInner() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    if (submitting) return;
     setError(null);
 
     const trimmedName = name.trim();
@@ -32,6 +34,7 @@ function MultiEntryInner() {
 
     if (mode === "create") {
       const room = generateRoomCode();
+      setSubmitting(true);
       router.push(
         `/multi/${room}?host=1&name=${encodeURIComponent(trimmedName)}`,
       );
@@ -44,6 +47,7 @@ function MultiEntryInner() {
       return;
     }
 
+    setSubmitting(true);
     router.push(`/multi/${room}?name=${encodeURIComponent(trimmedName)}`);
   }
 
@@ -97,8 +101,13 @@ function MultiEntryInner() {
           <button
             type="submit"
             className={`multi__btn ${mode === "join" ? "multi__btn--blue" : "multi__btn--green"}`}
+            disabled={submitting}
           >
-            {mode === "join" ? "Vstoupit" : "Vytvořit"}
+            {submitting
+              ? "Přesměrovávám…"
+              : mode === "join"
+                ? "Vstoupit"
+                : "Vytvořit"}
           </button>
           <Link
             className="multi__btn multi__btn--secondary"

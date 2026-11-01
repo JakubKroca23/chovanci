@@ -15,14 +15,20 @@ export default function SbirkaPage() {
         <p className="sbirka__intro">Všech 16 Chovanců — jméno, obrázek a chuť karty.</p>
       </header>
 
-      <div className="sbirka__grid">
-        {cards.map((card) => (
-          <article key={card.id} className="sbirka__item">
-            <CardView cardId={card.id} />
-            <p className="sbirka__flavor">{card.flavor}</p>
-          </article>
-        ))}
-      </div>
+      {cards.length === 0 ? (
+        <p className="sbirka__empty" role="status">
+          Sbírka je prázdná.
+        </p>
+      ) : (
+        <div className="sbirka__grid">
+          {cards.map((card) => (
+            <article key={card.id} className="sbirka__item">
+              <CardView cardId={card.id} />
+              <p className="sbirka__flavor">{card.flavor}</p>
+            </article>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

@@ -75,6 +75,7 @@ export default function SoloPage() {
   const [outcome, setOutcome] = useState<RoundOutcome | null>(null);
   const [shareNote, setShareNote] = useState<string | null>(null);
   const [round, setRound] = useState(0);
+  const [quizLocked, setQuizLocked] = useState(false);
 
   useEffect(() => {
     setHighScore(loadHighScore());
@@ -110,17 +111,22 @@ export default function SoloPage() {
   }
 
   function handleQuizAnswer(answerIndex: number) {
+    if (quizLocked) return;
+    setQuizLocked(true);
+
     const nextAnswers = [...answers, answerIndex];
     setAnswers(nextAnswers);
 
     if (questionIndex + 1 < quiz.length) {
       setQuestionIndex(questionIndex + 1);
+      setQuizLocked(false);
       return;
     }
 
     const { cardId } = scoreQuiz(nextAnswers);
     setStarterCardId(cardId);
     setPhase("reveal-card");
+    setQuizLocked(false);
   }
 
   function handleBeginPlay() {
@@ -236,6 +242,7 @@ export default function SoloPage() {
     setWaiting(false);
     setShareNote(null);
     setRound(0);
+    setQuizLocked(false);
     setHighScore(loadHighScore());
   }
 
@@ -269,6 +276,7 @@ export default function SoloPage() {
                 key={`${question.id}-${index}`}
                 type="button"
                 className="solo__answer"
+                disabled={quizLocked}
                 onClick={() => handleQuizAnswer(index)}
               >
                 {answer.label}

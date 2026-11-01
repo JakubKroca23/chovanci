@@ -9,7 +9,12 @@ export type ClientMsg =
 
 export type ServerError = { type: "error"; message: string };
 
-export type MatchMessage = MatchState | ServerError;
+export type ConnectionEvent =
+  | { type: "connection"; status: "open" }
+  | { type: "connection"; status: "error"; message: string }
+  | { type: "connection"; status: "closed"; message: string };
+
+export type MatchMessage = MatchState | ServerError | ConnectionEvent;
 
 export type MatchConnection = {
   send: (msg: ClientMsg) => void;
@@ -19,6 +24,9 @@ export type MatchConnection = {
 
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I/O
 const PLAYER_ID_KEY = "chovanci:playerId";
+
+const DISCONNECT_CS =
+  "Spojení s místností selhalo. Zkontroluj PartyKit (npx partykit dev) a obnov stránku.";
 
 export function getPartyKitHost(): string {
   return process.env.NEXT_PUBLIC_PARTYKIT_HOST ?? "localhost:1999";
@@ -73,6 +81,10 @@ export function connectToMatch(code: string): MatchConnection {
 
   const listeners = new Set<(msg: MatchMessage) => void>();
 
+  const emit = (msg: MatchMessage) => {
+    for (const cb of listeners) cb(msg);
+  };
+
   const onMessage = (event: MessageEvent) => {
     let parsed: unknown;
     try {
@@ -81,11 +93,26 @@ export function connectToMatch(code: string): MatchConnection {
       return;
     }
     if (isServerError(parsed) || isMatchState(parsed)) {
-      for (const cb of listeners) cb(parsed);
+      emit(parsed);
     }
   };
 
+  const onOpen = () => {
+    emit({ type: "connection", status: "open" });
+  };
+
+  const onError = () => {
+    emit({ type: "connection", status: "error", message: DISCONNECT_CS });
+  };
+
+  const onClose = () => {
+    emit({ type: "connection", status: "closed", message: DISCONNECT_CS });
+  };
+
   socket.addEventListener("message", onMessage);
+  socket.addEventListener("open", onOpen);
+  socket.addEventListener("error", onError);
+  socket.addEventListener("close", onClose);
 
   return {
     send(msg: ClientMsg) {
@@ -99,6 +126,9 @@ export function connectToMatch(code: string): MatchConnection {
     },
     close() {
       socket.removeEventListener("message", onMessage);
+      socket.removeEventListener("open", onOpen);
+      socket.removeEventListener("error", onError);
+      socket.removeEventListener("close", onClose);
       listeners.clear();
       socket.close();
     },

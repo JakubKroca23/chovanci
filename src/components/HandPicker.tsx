@@ -10,24 +10,32 @@ type HandPickerProps = {
 };
 
 export function HandPicker({ cardIds, disabled = false, onPick }: HandPickerProps) {
+  if (cardIds.length === 0) {
+    return (
+      <p className="hand-picker__empty" role="status">
+        Ruka je prázdná.
+      </p>
+    );
+  }
+
   return (
-    <div className="hand-picker" role="list" aria-label="Tvoje ruka">
+    <ul className="hand-picker" aria-label="Tvoje ruka">
       {cardIds.map((cardId) => {
         const card = getCard(cardId);
         return (
-          <button
-            key={cardId}
-            type="button"
-            role="listitem"
-            className="hand-picker__btn"
-            disabled={disabled}
-            onClick={() => onPick(cardId)}
-            aria-label={`Vybrat ${card.name}`}
-          >
-            <CardView cardId={cardId} compact />
-          </button>
+          <li key={cardId} className="hand-picker__item">
+            <button
+              type="button"
+              className="hand-picker__btn"
+              disabled={disabled}
+              onClick={() => onPick(cardId)}
+              aria-label={`Vybrat ${card.name}`}
+            >
+              <CardView cardId={cardId} compact />
+            </button>
+          </li>
         );
       })}
-    </div>
+    </ul>
   );
 }

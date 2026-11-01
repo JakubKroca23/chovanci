@@ -24,8 +24,8 @@ export default function SbirkaPage() {
         {cards.length} karet — core set a schválené výtvory z generátoru.
       </p>
       <div className="hs-grid">
-        {cards.map((c) => (
-          <HsCard key={c.id} def={c} as="div" size="md" />
+        {cards.map((card) => (
+          <HsCard key={card.id} def={card} as="div" size="md" />
         ))}
       </div>
     </main>

@@ -3,43 +3,44 @@ import { HsCard } from "@/components/hs/HsCard";
 import { getCardDef } from "@/lib/hs/cards";
 
 export default function Home() {
-  const showcaseA = getCardDef("chovanec");
-  const showcaseB = getCardDef("prezivanec");
+  const a = getCardDef("chovanec");
+  const b = getCardDef("dochovanec");
+  const c = getCardDef("prezivanec");
 
   return (
     <main className="home-cs">
       <div className="home-cs__stage" aria-hidden>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/ui/board-hero.jpg" alt="" />
+        <picture>
+          <source media="(min-width: 900px)" srcSet="/ui/home-wide.jpg" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/ui/home-portrait.jpg" alt="" />
+        </picture>
         <div className="home-cs__veil" />
       </div>
 
-      <div className="home-cs__float" aria-hidden>
-        <HsCard def={showcaseA} as="div" size="md" showText={false} />
-      </div>
-      <div className="home-cs__float home-cs__float--b" aria-hidden>
-        <HsCard def={showcaseB} as="div" size="sm" showText={false} />
+      <div className="home-cs__float-mobile" aria-hidden>
+        <HsCard def={a} as="div" size="sm" showText={false} />
       </div>
 
       <div className="home-cs__content">
         <header>
-          <p className="home-cs__eyebrow">propoj.app</p>
+          <p className="home-cs__eyebrow">propoj.app · fantasy arena</p>
           <h1 className="home-cs__brand">
             Chovanec
             <span>Stone</span>
           </h1>
           <p className="home-cs__tag">
-            Souboj 1v1 na zeleném stole — minioni, spelly, hero power a tvoji
-            Chovanci.
+            Vstup do arény. Stavěj deck, volej miniony a rozhodni souboj 1v1 —
+            proti botovi nebo kamarádovi.
           </p>
         </header>
 
         <nav className="home-cs__cta" aria-label="Hlavní akce">
           <Link className="cs-btn cs-btn--primary cs-btn--block" href="/play">
-            Hrát vs bot
+            Vstoupit do arény
           </Link>
           <Link className="cs-btn cs-btn--ember cs-btn--block" href="/multi?mode=create">
-            Vytvořit 1v1 místnost
+            Vytvořit duel
           </Link>
           <Link className="cs-btn cs-btn--ghost cs-btn--block" href="/multi?mode=join">
             Připojit se kódem
@@ -52,6 +53,14 @@ export default function Home() {
           <Link href="/generator">Generátor</Link>
         </div>
       </div>
+
+      <aside className="home-cs__showcase" aria-hidden>
+        <div className="home-cs__showcase-inner">
+          <HsCard def={a} as="div" size="lg" showText={false} />
+          <HsCard def={b} as="div" size="md" showText={false} />
+          <HsCard def={c} as="div" size="sm" showText={false} />
+        </div>
+      </aside>
     </main>
   );
 }

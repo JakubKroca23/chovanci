@@ -46,13 +46,13 @@ export default function GeneratorPage() {
   }
 
   return (
-    <main className="cs-page" style={{ maxWidth: "32rem" }}>
+    <main className="cs-page" style={{ maxWidth: "36rem" }}>
       <Link className="cs-back" href="/">
         ← Domů
       </Link>
       <h1 className="cs-page__title">Generátor</h1>
       <p className="cs-page__lead">
-        Napiš nápad → AI navrhne kartu → schválíš do sbírky.
+        Popiš nápad — aréna navrhne kartu. Schválíš ji do sbírky.
       </p>
 
       <div className="cs-panel">
@@ -67,11 +67,11 @@ export default function GeneratorPage() {
         <button
           type="button"
           className="cs-btn cs-btn--primary cs-btn--block"
-          style={{ marginTop: "0.85rem" }}
+          style={{ marginTop: "1rem" }}
           disabled={busy || prompt.trim().length < 3}
           onClick={generate}
         >
-          {busy ? "Generuju…" : "Navrhnout kartu"}
+          {busy ? "Kování karty…" : "Navrhnout kartu"}
         </button>
         {message && <p className="cs-note">{message}</p>}
       </div>
@@ -79,14 +79,10 @@ export default function GeneratorPage() {
       {card && (
         <div
           className="cs-panel"
-          style={{
-            display: "grid",
-            justifyItems: "center",
-            gap: "1rem",
-          }}
+          style={{ display: "grid", justifyItems: "center", gap: "1.1rem" }}
         >
           <HsCard def={card} as="div" size="lg" />
-          <div style={{ display: "flex", gap: "0.65rem", width: "100%" }}>
+          <div style={{ display: "flex", gap: "0.7rem", width: "100%" }}>
             <button
               type="button"
               className="cs-btn cs-btn--primary"

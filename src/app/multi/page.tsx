@@ -21,7 +21,7 @@ function MultiEntryInner() {
   const [submitting, setSubmitting] = useState(false);
 
   const title = useMemo(
-    () => (mode === "join" ? "Připojit se" : "Vytvořit místnost"),
+    () => (mode === "join" ? "Připojit se k duelu" : "Otevřít arénu"),
     [mode],
   );
 
@@ -54,18 +54,22 @@ function MultiEntryInner() {
   }
 
   return (
-    <main className="cs-page" style={{ maxWidth: "28rem" }}>
+    <main className="cs-page" style={{ maxWidth: "30rem" }}>
       <Link className="cs-back" href="/">
         ← Domů
       </Link>
       <h1 className="cs-page__title">{title}</h1>
       <p className="cs-page__lead">
         {mode === "join"
-          ? "ChovanecStone 1v1 — zadej kód místnosti a jméno."
-          : "ChovanecStone 1v1 — zvol jméno, kód se vygeneruje."}
+          ? "Zadej čtyřpísmenný kód a své bojové jméno."
+          : "Zvol jméno — kód arény se vygeneruje hned."}
       </p>
 
-      <form className="cs-panel" onSubmit={handleSubmit} style={{ display: "grid", gap: "0.85rem" }}>
+      <form
+        className="cs-panel"
+        onSubmit={handleSubmit}
+        style={{ display: "grid", gap: "1rem" }}
+      >
         <label className="cs-field">
           Jméno
           <input
@@ -90,19 +94,33 @@ function MultiEntryInner() {
               autoComplete="off"
               placeholder="ABCD"
               required
-              style={{ letterSpacing: "0.22em", fontFamily: "var(--font-display)", fontWeight: 700 }}
+              style={{
+                letterSpacing: "0.28em",
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                textAlign: "center",
+                fontSize: "1.25rem",
+              }}
             />
           </label>
         )}
 
-        {error && <p className="cs-note" style={{ color: "#ffb4a8" }}>{error}</p>}
+        {error && (
+          <p className="cs-note" style={{ color: "#ffb4a8" }}>
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           className={`cs-btn cs-btn--block ${mode === "join" ? "cs-btn--primary" : "cs-btn--ember"}`}
           disabled={submitting}
         >
-          {submitting ? "Přesměrovávám…" : mode === "join" ? "Vstoupit" : "Vytvořit"}
+          {submitting
+            ? "Přesměrovávám…"
+            : mode === "join"
+              ? "Vstoupit"
+              : "Vytvořit duel"}
         </button>
         <Link
           className="cs-btn cs-btn--ghost cs-btn--block"

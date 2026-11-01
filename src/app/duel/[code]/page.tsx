@@ -208,21 +208,23 @@ function DuelInner() {
             </div>
           </footer>
 
-          <div className="battle__hand">
-            {me.hand.map((id, handIndex) => {
-              const def = getCardDef(id);
-              return (
-                <HsCard
-                  key={`${id}-${handIndex}`}
-                  def={def}
-                  size="sm"
-                  showText={false}
-                  disabled={!myTurn || def.cost > me.mana}
-                  selected={pendingPlay?.handIndex === handIndex}
-                  onClick={() => tryPlay(handIndex)}
-                />
-              );
-            })}
+          <div className="battle__hand-wrap">
+            <div className="battle__hand">
+              {me.hand.map((id, handIndex) => {
+                const def = getCardDef(id);
+                return (
+                  <HsCard
+                    key={`${id}-${handIndex}`}
+                    def={def}
+                    size="sm"
+                    showText={false}
+                    disabled={!myTurn || def.cost > me.mana}
+                    selected={pendingPlay?.handIndex === handIndex}
+                    onClick={() => tryPlay(handIndex)}
+                  />
+                );
+              })}
+            </div>
           </div>
 
           {match.phase === "ended" && (

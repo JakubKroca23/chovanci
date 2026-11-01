@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Manrope, Unbounded } from "next/font/google";
+import { Cinzel, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
-const display = Unbounded({
+const display = Cinzel({
   variable: "--font-display",
   subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700"],
 });
 
-const body = Manrope({
+const body = Source_Sans_3({
   variable: "--font-body",
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: "ChovanecStone",
-  description: "Hearthstone s Chovanci — souboj 1v1, decky a generátor karet",
+  description: "Fantasy souboj s Chovanci — 1v1, decky a generátor karet",
 };
 
 export default function RootLayout({

@@ -104,8 +104,8 @@ export default function PlayPage() {
 
       {!match && (
         <section className="battle__setup">
-          <h1>Souboj s botem</h1>
-          <p>Mana 1→10, The Coin pro druhého, Rush / Charge / Taunt jako v HS.</p>
+          <h1>Vstup do arény</h1>
+          <p>Vyber hrdinu. Mana 1→10, Coin pro druhého hráče, Rush / Charge / Taunt.</p>
           <div className="battle__heroes">
             {HEROES.map((h) => (
               <button
@@ -278,23 +278,25 @@ export default function PlayPage() {
             </div>
           </footer>
 
-          <div className="battle__hand" aria-label="Ruka">
-            {me.hand.map((cardId, handIndex) => {
-              const def = getCardDef(cardId, extra);
-              const canPlay = !busy && myTurn && def.cost <= me.mana;
-              return (
-                <div key={`${cardId}-${handIndex}`} style={{ ["--i" as string]: handIndex }}>
-                  <HsCard
-                    def={def}
-                    size="sm"
-                    showText={false}
-                    disabled={!canPlay}
-                    selected={pendingPlay?.handIndex === handIndex}
-                    onClick={() => tryPlayCard(handIndex)}
-                  />
-                </div>
-              );
-            })}
+          <div className="battle__hand-wrap">
+            <div className="battle__hand" aria-label="Ruka">
+              {me.hand.map((cardId, handIndex) => {
+                const def = getCardDef(cardId, extra);
+                const canPlay = !busy && myTurn && def.cost <= me.mana;
+                return (
+                  <div key={`${cardId}-${handIndex}`} style={{ ["--i" as string]: handIndex }}>
+                    <HsCard
+                      def={def}
+                      size="sm"
+                      showText={false}
+                      disabled={!canPlay}
+                      selected={pendingPlay?.handIndex === handIndex}
+                      onClick={() => tryPlayCard(handIndex)}
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {error && <p className="battle__error">{error}</p>}

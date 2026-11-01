@@ -67,15 +67,10 @@ export default function DecksPage() {
       setNote(`Deck musí mít 30 karet (teď ${cards.length}).`);
       return;
     }
-    const deck: SavedDeck = {
-      id: "main",
-      name,
-      heroId,
-      cards,
-    };
+    const deck: SavedDeck = { id: "main", name, heroId, cards };
     saveDeck(deck);
     saveHero(heroId);
-    setNote("Deck uložen — použije se ve hře vs bot i v 1v1.");
+    setNote("Deck uložen — použije se ve hře vs bot i v duelu.");
   }
 
   return (
@@ -83,14 +78,15 @@ export default function DecksPage() {
       <Link className="cs-back" href="/">
         ← Domů
       </Link>
-      <h1 className="cs-page__title">Decky</h1>
+      <h1 className="cs-page__title">Sestavovač decků</h1>
       <p className="cs-page__lead">
-        Sestav 30 karet. Teď <strong style={{ color: "var(--cs-brass)" }}>{total}</strong> / 30
+        Poskládej 30 karet. Teď{" "}
+        <strong style={{ color: "var(--cs-brass)" }}>{total}</strong> / 30
       </p>
 
-      <div className="cs-panel" style={{ display: "grid", gap: "0.85rem" }}>
+      <div className="cs-panel" style={{ display: "grid", gap: "1rem" }}>
         <label className="cs-field">
-          Název
+          Název balíčku
           <input
             className="cs-input"
             value={name}
@@ -98,7 +94,7 @@ export default function DecksPage() {
           />
         </label>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.55rem" }}>
           {HEROES.map((h) => (
             <button
               key={h.id}
@@ -118,25 +114,39 @@ export default function DecksPage() {
       </div>
 
       <div className="hs-grid">
-        {pool.map((c) => {
-          const n = counts[c.id] ?? 0;
+        {pool.map((card) => {
+          const n = counts[card.id] ?? 0;
           return (
-            <div key={c.id} style={{ display: "grid", gap: "0.45rem", justifyItems: "center" }}>
-              <HsCard
-                def={c}
-                as="div"
-                size="sm"
-                showText={false}
-                selected={n > 0}
-              />
+            <div
+              key={card.id}
+              style={{ display: "grid", gap: "0.55rem", justifyItems: "center" }}
+            >
+              <HsCard def={card} as="div" size="sm" showText={false} selected={n > 0} />
               <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
-                <button type="button" className="cs-btn cs-btn--ghost" style={{ minHeight: 40, padding: "0.35rem 0.75rem" }} onClick={() => remove(c.id)}>
+                <button
+                  type="button"
+                  className="cs-btn cs-btn--ghost"
+                  style={{ minHeight: 42, padding: "0.35rem 0.8rem" }}
+                  onClick={() => remove(card.id)}
+                >
                   −
                 </button>
-                <strong style={{ fontFamily: "var(--font-display)", minWidth: "1.5rem", textAlign: "center" }}>
+                <strong
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    minWidth: "1.6rem",
+                    textAlign: "center",
+                    color: n ? "var(--cs-brass)" : "var(--cs-mist)",
+                  }}
+                >
                   {n}
                 </strong>
-                <button type="button" className="cs-btn cs-btn--ghost" style={{ minHeight: 40, padding: "0.35rem 0.75rem" }} onClick={() => add(c.id, c.rarity)}>
+                <button
+                  type="button"
+                  className="cs-btn cs-btn--ghost"
+                  style={{ minHeight: 42, padding: "0.35rem 0.8rem" }}
+                  onClick={() => add(card.id, card.rarity)}
+                >
                   +
                 </button>
               </div>

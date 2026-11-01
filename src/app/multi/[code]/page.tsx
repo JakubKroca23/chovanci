@@ -11,6 +11,7 @@ import { VerdictBanner } from "@/components/VerdictBanner";
 import { getSituation } from "@/lib/cards";
 import {
   connectToMatch,
+  DISCONNECT_CS,
   getOrCreatePlayerId,
   type MatchConnection,
 } from "@/lib/multi-client";
@@ -34,6 +35,7 @@ function MultiRoomInner() {
   const [match, setMatch] = useState<MatchState | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
+  const [reconnecting, setReconnecting] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -46,10 +48,19 @@ function MultiRoomInner() {
     let alive = true;
     let joined = false;
     let sawOpen = false;
+    let hardCloseTimer: number | undefined;
     const connection = connectToMatch(code);
     setConn(connection);
     setConnected(false);
+    setReconnecting(false);
     setBusy(false);
+
+    const clearHardCloseTimer = () => {
+      if (hardCloseTimer !== undefined) {
+        window.clearTimeout(hardCloseTimer);
+        hardCloseTimer = undefined;
+      }
+    };
 
     const unsub = connection.subscribe((msg) => {
       if (!alive) return;
@@ -57,13 +68,28 @@ function MultiRoomInner() {
       if ("type" in msg && msg.type === "connection") {
         if (msg.status === "open") {
           sawOpen = true;
+          clearHardCloseTimer();
           setConnected(true);
+          setReconnecting(false);
           setError(null);
           return;
         }
         setConnected(false);
-        if (msg.status === "error" || msg.status === "closed") {
+        if (msg.status === "error") {
+          clearHardCloseTimer();
+          setReconnecting(false);
           setError(msg.message);
+          return;
+        }
+        if (msg.status === "closed") {
+          // Soft reconnect window — only escalate after ~3s still closed.
+          setReconnecting(true);
+          clearHardCloseTimer();
+          hardCloseTimer = window.setTimeout(() => {
+            if (!alive) return;
+            setReconnecting(false);
+            setError(DISCONNECT_CS);
+          }, 3000);
         }
         return;
       }
@@ -100,19 +126,20 @@ function MultiRoomInner() {
     const connectWatch = window.setTimeout(() => {
       if (!alive || sawOpen) return;
       setConnected(false);
-      setError(
-        "Spojení s místností selhalo. Zkontroluj PartyKit (npx partykit dev) a obnov stránku.",
-      );
+      setReconnecting(false);
+      setError(DISCONNECT_CS);
     }, 8000);
 
     return () => {
       alive = false;
       window.clearTimeout(timer);
       window.clearTimeout(connectWatch);
+      clearHardCloseTimer();
       unsub();
       connection.close();
       setConn(null);
       setConnected(false);
+      setReconnecting(false);
     };
   }, [code, name, playerId]);
 
@@ -184,7 +211,11 @@ function MultiRoomInner() {
 
       {error && <p className="multi__error">{error}</p>}
 
-      {!match && !error && (
+      {reconnecting && !error && (
+        <p className="multi__waiting">Znovu připojuji…</p>
+      )}
+
+      {!match && !error && !reconnecting && (
         <p className="multi__waiting">
           {connected ? "Připojuji k místnosti…" : "Čekám na spojení…"}
         </p>
@@ -206,7 +237,7 @@ function MultiRoomInner() {
                     {player.id === playerId ? " (ty)" : ""}
                   </span>
                   {player.id === match.hostId ? (
-                    <span className="multi__player-tag">host</span>
+                    <span className="multi__player-tag">hostitel</span>
                   ) : null}
                 </li>
               ))}
@@ -224,7 +255,7 @@ function MultiRoomInner() {
                 }
                 onClick={() => sendOnce({ type: "start" })}
               >
-                Start
+                Spustit hru
               </button>
             </div>
           ) : (

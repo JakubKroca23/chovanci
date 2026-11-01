@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CardView } from "@/components/CardView";
 import { HandPicker } from "@/components/HandPicker";
 import { SituationBanner } from "@/components/SituationBanner";
@@ -76,10 +76,18 @@ export default function SoloPage() {
   const [shareNote, setShareNote] = useState<string | null>(null);
   const [round, setRound] = useState(0);
   const [quizLocked, setQuizLocked] = useState(false);
+  const quizAnswerLatch = useRef(false);
 
   useEffect(() => {
     setHighScore(loadHighScore());
   }, []);
+
+  // Unlock mid-quiz answers only after the next question has committed.
+  useEffect(() => {
+    if (phase !== "quiz") return;
+    quizAnswerLatch.current = false;
+    setQuizLocked(false);
+  }, [phase, questionIndex]);
 
   function persistHighScore(nextStreak: number) {
     setHighScore((prev) => {
@@ -111,22 +119,22 @@ export default function SoloPage() {
   }
 
   function handleQuizAnswer(answerIndex: number) {
-    if (quizLocked) return;
+    if (quizLocked || quizAnswerLatch.current) return;
+    quizAnswerLatch.current = true;
     setQuizLocked(true);
 
     const nextAnswers = [...answers, answerIndex];
     setAnswers(nextAnswers);
 
     if (questionIndex + 1 < quiz.length) {
-      setQuestionIndex(questionIndex + 1);
-      setQuizLocked(false);
+      // Stay locked until questionIndex effect unlocks after commit.
+      setQuestionIndex((i) => i + 1);
       return;
     }
 
     const { cardId } = scoreQuiz(nextAnswers);
     setStarterCardId(cardId);
     setPhase("reveal-card");
-    setQuizLocked(false);
   }
 
   function handleBeginPlay() {
@@ -242,6 +250,7 @@ export default function SoloPage() {
     setWaiting(false);
     setShareNote(null);
     setRound(0);
+    quizAnswerLatch.current = false;
     setQuizLocked(false);
     setHighScore(loadHighScore());
   }

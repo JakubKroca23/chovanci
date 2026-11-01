@@ -12,7 +12,7 @@ export type ServerError = { type: "error"; message: string };
 export type ConnectionEvent =
   | { type: "connection"; status: "open" }
   | { type: "connection"; status: "error"; message: string }
-  | { type: "connection"; status: "closed"; message: string };
+  | { type: "connection"; status: "closed" };
 
 export type MatchMessage = MatchState | ServerError | ConnectionEvent;
 
@@ -25,7 +25,7 @@ export type MatchConnection = {
 const ROOM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // no I/O
 const PLAYER_ID_KEY = "chovanci:playerId";
 
-const DISCONNECT_CS =
+export const DISCONNECT_CS =
   "Spojení s místností selhalo. Zkontroluj PartyKit (npx partykit dev) a obnov stránku.";
 
 export function getPartyKitHost(): string {
@@ -106,7 +106,8 @@ export function connectToMatch(code: string): MatchConnection {
   };
 
   const onClose = () => {
-    emit({ type: "connection", status: "closed", message: DISCONNECT_CS });
+    // Soft signal only — UI decides whether a transient close becomes a hard error.
+    emit({ type: "connection", status: "closed" });
   };
 
   socket.addEventListener("message", onMessage);

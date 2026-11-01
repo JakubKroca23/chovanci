@@ -1,0 +1,90 @@
+[
+  {
+    "id": "quiz-01",
+    "prompt": "Pátek večer. Co děláš?",
+    "answers": [
+      {
+        "label": "Jdu ven a dělám show",
+        "weights": { "styl": 2, "nadseni": 1, "chaos": 1 }
+      },
+      {
+        "label": "Zůstanu doma s projektem",
+        "weights": { "prace": 2, "formal": 1 }
+      },
+      {
+        "label": "Schovám se a doufám, že to přejde",
+        "weights": { "ukryt": 2, "pochybnost": 1 }
+      },
+      {
+        "label": "Venčím psa a řeším život",
+        "weights": { "pes": 2, "preziti": 1 }
+      }
+    ]
+  },
+  {
+    "id": "quiz-02",
+    "prompt": "Přijde krize. Tvoje první reakce?",
+    "answers": [
+      {
+        "label": "Přežiju to. Vždycky.",
+        "weights": { "preziti": 2, "zaklad": 1 }
+      },
+      {
+        "label": "Mám plán. A záložní plán. A teorii.",
+        "weights": { "konspirace": 2, "ukryt": 1 }
+      },
+      {
+        "label": "Skáču do toho jako hrdina",
+        "weights": { "rytir": 2, "nadseni": 1 }
+      },
+      {
+        "label": "Nejdřív zpochybním, jestli je to vůbec krize",
+        "weights": { "pochybnost": 2, "formal": 1 }
+      }
+    ]
+  },
+  {
+    "id": "quiz-03",
+    "prompt": "Na rande chceš působit jako…",
+    "answers": [
+      {
+        "label": "Romantik s charakterem",
+        "weights": { "romance": 2, "styl": 1 }
+      },
+      {
+        "label": "Slušný člověk s dobrými mravy",
+        "weights": { "formal": 2, "zaklad": 1 }
+      },
+      {
+        "label": "Trochu špinavý, ale autentický",
+        "weights": { "spinavy": 2, "preziti": 1 }
+      },
+      {
+        "label": "Energický chaos v lidské podobě",
+        "weights": { "chaos": 2, "nadseni": 1 }
+      }
+    ]
+  },
+  {
+    "id": "quiz-04",
+    "prompt": "V práci jsi spíš…",
+    "answers": [
+      {
+        "label": "Ten, kdo to dořeší i v pátek večer",
+        "weights": { "prace": 2, "preziti": 1 }
+      },
+      {
+        "label": "Ten, kdo ví, kdy se schovat",
+        "weights": { "ukryt": 2, "pochybnost": 1 }
+      },
+      {
+        "label": "Ten, kdo drží tým nahoře",
+        "weights": { "nadseni": 2, "rytir": 1 }
+      },
+      {
+        "label": "Ten, kdo si zachoval vnitřní dítě",
+        "weights": { "detsky": 2, "chaos": 1 }
+      }
+    ]
+  }
+]

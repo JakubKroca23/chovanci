@@ -1,0 +1,210 @@
+[
+  {
+    "id": "chovanec",
+    "name": "CHOVANEC",
+    "color": "#8B8B8B",
+    "image": "/cards/chovanec.jpg",
+    "flavor": "Základní verze. Vypadá to slušně, ale znáte ho...",
+    "stats": [
+      { "icon": "paw", "value": 10 },
+      { "icon": "brain", "value": 5 },
+      { "icon": "heart", "value": 5 }
+    ],
+    "tags": ["zaklad"]
+  },
+  {
+    "id": "nevychovanec",
+    "name": "NEVYCHOVANEC",
+    "color": "#C0392B",
+    "image": "/cards/nevychovanec.jpg",
+    "flavor": "Pravidla? Která pravidla?",
+    "stats": [
+      { "icon": "devil", "value": 20 },
+      { "icon": "beer", "value": 10 },
+      { "icon": "warning", "value": 5 }
+    ],
+    "tags": ["chaos", "styl"]
+  },
+  {
+    "id": "odchovanec",
+    "name": "ODCHOVANEC",
+    "color": "#27AE60",
+    "image": "/cards/odchovanec.jpg",
+    "flavor": "Ještě roste, ale potenciál má!",
+    "stats": [
+      { "icon": "bottle", "value": 15 },
+      { "icon": "heart", "value": 10 },
+      { "icon": "teddy", "value": 5 }
+    ],
+    "tags": ["detsky", "nadseni"]
+  },
+  {
+    "id": "vychovanec",
+    "name": "VYCHOVANEC",
+    "color": "#2980B9",
+    "image": "/cards/vychovanec.jpg",
+    "flavor": "Vždy ví, jak se zachovat. (Skoro vždy.)",
+    "stats": [
+      { "icon": "grad", "value": 20 },
+      { "icon": "book", "value": 15 },
+      { "icon": "handshake", "value": 10 }
+    ],
+    "tags": ["formal", "prace"]
+  },
+  {
+    "id": "prechovanec",
+    "name": "PŘECHOVANEC",
+    "color": "#F1C40F",
+    "image": "/cards/prechovanec.jpg",
+    "flavor": "Všechno má jinak. A možná ví proč...",
+    "stats": [
+      { "icon": "alien", "value": 15 },
+      { "icon": "signal", "value": 10 },
+      { "icon": "question", "value": 10 }
+    ],
+    "tags": ["konspirace", "pochybnost"]
+  },
+  {
+    "id": "dochovanec",
+    "name": "DOCHOVANEC",
+    "color": "#A08968",
+    "image": "/cards/dochovanec.jpg",
+    "flavor": "Našel se. A je to originál.",
+    "stats": [
+      { "icon": "pillar", "value": 20 },
+      { "icon": "search", "value": 15 },
+      { "icon": "diamond", "value": 5 }
+    ],
+    "tags": ["preziti", "zaklad"]
+  },
+  {
+    "id": "zhovanec",
+    "name": "ZHOVANEC",
+    "color": "#8E44AD",
+    "image": "/cards/zhovanec.jpg",
+    "flavor": "Klid, styl, respekt.",
+    "stats": [
+      { "icon": "sunglasses", "value": 20 },
+      { "icon": "bolt", "value": 15 },
+      { "icon": "fire", "value": 10 }
+    ],
+    "tags": ["styl", "nadseni"]
+  },
+  {
+    "id": "zchovanec",
+    "name": "ZCHOVANEC",
+    "color": "#6D4C41",
+    "image": "/cards/zchovanec.jpg",
+    "flavor": "Z auta, z dílny, ze života. Trochu špinavý, ale funkční.",
+    "stats": [
+      { "icon": "mountain", "value": 15 },
+      { "icon": "boot", "value": 10 },
+      { "icon": "gear", "value": 10 }
+    ],
+    "tags": ["spinavy", "prace"]
+  },
+  {
+    "id": "nachovanec",
+    "name": "NACHOVANEC",
+    "color": "#E91E63",
+    "image": "/cards/nachovanec.jpg",
+    "flavor": "I drsňák umí být romantik.",
+    "stats": [
+      { "icon": "heart", "value": 20 },
+      { "icon": "lips", "value": 15 },
+      { "icon": "sparkles", "value": 5 }
+    ],
+    "tags": ["romance", "styl"]
+  },
+  {
+    "id": "podchovanec",
+    "name": "PODCHOVANEC",
+    "color": "#E67E22",
+    "image": "/cards/podchovanec.jpg",
+    "flavor": "Radši zůstane v úkrytu. Pozoruje. Plánuje.",
+    "stats": [
+      { "icon": "box", "value": 15 },
+      { "icon": "eye", "value": 10 },
+      { "icon": "shield", "value": 10 }
+    ],
+    "tags": ["ukryt", "konspirace"]
+  },
+  {
+    "id": "nadchovanec",
+    "name": "NADCHOVANEC",
+    "color": "#F39C12",
+    "image": "/cards/nadchovanec.jpg",
+    "flavor": "Nadšení je stav mysli!",
+    "stats": [
+      { "icon": "star", "value": 25 },
+      { "icon": "bulb", "value": 15 },
+      { "icon": "smile", "value": 10 }
+    ],
+    "tags": ["nadseni", "chaos"]
+  },
+  {
+    "id": "zachovanec",
+    "name": "ZACHOVANEC",
+    "color": "#5DADE2",
+    "image": "/cards/zachovanec.jpg",
+    "flavor": "Stále v kondici. Připraven na další výzvy.",
+    "stats": [
+      { "icon": "shield", "value": 20 },
+      { "icon": "bicep", "value": 15 },
+      { "icon": "snowflake", "value": 5 }
+    ],
+    "tags": ["rytir", "preziti"]
+  },
+  {
+    "id": "prezivanec",
+    "name": "PŘEŽIVANEC",
+    "color": "#556B2F",
+    "image": "/cards/prezivanec.jpg",
+    "flavor": "Přežije vše. Kafe, pondělí i nové požadavky.",
+    "stats": [
+      { "icon": "tent", "value": 20 },
+      { "icon": "fire", "value": 15 },
+      { "icon": "tree", "value": 10 }
+    ],
+    "tags": ["preziti", "prace"]
+  },
+  {
+    "id": "spoluochovanec",
+    "name": "SPOLUOCHOVANEC",
+    "color": "#4A235A",
+    "image": "/cards/spoluochovanec.jpg",
+    "flavor": "Rozumíme si beze slov.",
+    "stats": [
+      { "icon": "paw", "value": 25 },
+      { "icon": "heart", "value": 15 },
+      { "icon": "people", "value": 10 }
+    ],
+    "tags": ["pes", "romance"]
+  },
+  {
+    "id": "pracovanec",
+    "name": "PRACOVANEC",
+    "color": "#2C3E50",
+    "image": "/cards/pracovanec.jpg",
+    "flavor": "Kreslí. Počítá. Řeší. A stejně to nikdy není jednoduché.",
+    "stats": [
+      { "icon": "gear", "value": 20 },
+      { "icon": "wrench", "value": 15 },
+      { "icon": "chart", "value": 10 }
+    ],
+    "tags": ["prace", "formal"]
+  },
+  {
+    "id": "pochybovanec",
+    "name": "POCHYBOVANEC",
+    "color": "#1A1A1A",
+    "image": "/cards/pochybovanec.jpg",
+    "flavor": "Myslí, tedy pochybuje. A to je v pořádku.",
+    "stats": [
+      { "icon": "thought", "value": 20 },
+      { "icon": "question", "value": 15 },
+      { "icon": "scales", "value": 5 }
+    ],
+    "tags": ["pochybnost", "konspirace"]
+  }
+]

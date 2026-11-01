@@ -1,0 +1,206 @@
+[
+  {
+    "id": "ver-01",
+    "tags": ["chaos"],
+    "moods": ["party", "crisis"],
+    "text": "Soudce uznává: chaos vyhrál. A zaslouženě."
+  },
+  {
+    "id": "ver-02",
+    "tags": ["styl"],
+    "moods": ["party", "love"],
+    "text": "Styl boduje. Ostatní jen přihlíželi."
+  },
+  {
+    "id": "ver-03",
+    "tags": ["preziti"],
+    "moods": ["crisis", "work"],
+    "text": "Přežil. To stačí. Gratulujeme."
+  },
+  {
+    "id": "ver-04",
+    "tags": ["romance"],
+    "moods": ["love"],
+    "text": "Srdce rozhodlo dřív než rozum. Klasika."
+  },
+  {
+    "id": "ver-05",
+    "tags": ["prace"],
+    "moods": ["work"],
+    "text": "Excel a pot. Vítězství voní kanceláří."
+  },
+  {
+    "id": "ver-06",
+    "tags": ["konspirace"],
+    "moods": ["random"],
+    "text": "Věděl to dřív. Nebo si to aspoň myslí."
+  },
+  {
+    "id": "ver-07",
+    "tags": ["detsky"],
+    "moods": ["family"],
+    "text": "Vnitřní dítě zvítězilo. Dospělí prohráli."
+  },
+  {
+    "id": "ver-08",
+    "tags": ["formal"],
+    "moods": ["work", "family"],
+    "text": "Etiketa 1, impuls 0. Formálně správně."
+  },
+  {
+    "id": "ver-09",
+    "tags": ["spinavy"],
+    "moods": ["crisis", "party"],
+    "text": "Špína jako strategie. Funguje překvapivě dobře."
+  },
+  {
+    "id": "ver-10",
+    "tags": ["ukryt"],
+    "moods": ["random", "crisis"],
+    "text": "Kdo se schoval, vyhrál. Logika večera."
+  },
+  {
+    "id": "ver-11",
+    "tags": ["nadseni"],
+    "moods": ["party", "work"],
+    "text": "Nadšení přebilo fakta. Ať žije energie!"
+  },
+  {
+    "id": "ver-12",
+    "tags": ["rytir"],
+    "moods": ["love", "family"],
+    "text": "Rytíř v akci. Plášť optional, hrdinství povinné."
+  },
+  {
+    "id": "ver-13",
+    "tags": ["pes"],
+    "moods": ["family", "random"],
+    "text": "Pes by to schválil. To je nejvyšší verdikt."
+  },
+  {
+    "id": "ver-14",
+    "tags": ["pochybnost"],
+    "moods": ["work", "love"],
+    "text": "Pochyboval správně. Ostatní si byli jistí — omylem."
+  },
+  {
+    "id": "ver-15",
+    "tags": ["zaklad"],
+    "moods": ["random"],
+    "text": "Základní tah. Jednoduchý. Smrtící."
+  },
+  {
+    "id": "ver-16",
+    "tags": ["chaos", "styl"],
+    "moods": ["party"],
+    "text": "Chaos ve stylových botách. Porota mlčí v úžasu."
+  },
+  {
+    "id": "ver-17",
+    "tags": ["preziti", "prace"],
+    "moods": ["work", "crisis"],
+    "text": "Deadline přežil. Kariéra taky. Zázrak."
+  },
+  {
+    "id": "ver-18",
+    "tags": ["romance", "styl"],
+    "moods": ["love", "party"],
+    "text": "Romantika s drobným nádechem cool. Bod."
+  },
+  {
+    "id": "ver-19",
+    "tags": ["konspirace", "ukryt"],
+    "moods": ["random"],
+    "text": "Plán byl v hlavě. Důkazy v kapse. Hotovo."
+  },
+  {
+    "id": "ver-20",
+    "tags": ["spinavy", "preziti"],
+    "moods": ["crisis"],
+    "text": "Ušpiněný, ale živý. To je dnešní standard."
+  },
+  {
+    "id": "ver-21",
+    "tags": ["detsky", "nadseni"],
+    "moods": ["family", "party"],
+    "text": "Radost bez filtru. Dospělost odložena na neurčito."
+  },
+  {
+    "id": "ver-22",
+    "tags": ["formal", "rytir"],
+    "moods": ["work", "family"],
+    "text": "Zdvořilost a odvaha. Vzácná kombinace."
+  },
+  {
+    "id": "ver-23",
+    "tags": ["pes", "romance"],
+    "moods": ["love", "family"],
+    "text": "Láska beze slov. Ocas rozhodl."
+  },
+  {
+    "id": "ver-24",
+    "tags": ["pochybnost", "konspirace"],
+    "moods": ["random", "work"],
+    "text": "Otázky vyhrály nad odpověďmi. Filozofický checkmate."
+  },
+  {
+    "id": "ver-25",
+    "tags": ["chaos"],
+    "moods": ["work"],
+    "text": "Stand-up se změnil v stand-out. Chaos bere bod."
+  },
+  {
+    "id": "ver-26",
+    "tags": ["preziti"],
+    "moods": ["family", "party"],
+    "text": "Přežil rodinu i párty. Legendární stamina."
+  },
+  {
+    "id": "ver-27",
+    "tags": ["styl"],
+    "moods": ["work"],
+    "text": "I v open space jde vypadat jako hlavní postava."
+  },
+  {
+    "id": "ver-28",
+    "tags": ["ukryt"],
+    "moods": ["love", "family"],
+    "text": "Taktický ústup uznán jako geniální manévr."
+  },
+  {
+    "id": "ver-29",
+    "tags": ["nadseni"],
+    "moods": ["crisis", "love"],
+    "text": "Optimismus jako zbraň. Fungovalo. Skoro děsivě."
+  },
+  {
+    "id": "ver-30",
+    "tags": ["prace"],
+    "moods": ["crisis", "party"],
+    "text": "Pracovitost v nevhodnou chvíli. Přesto výhra."
+  },
+  {
+    "id": "ver-31",
+    "tags": ["rytir"],
+    "moods": ["crisis", "party"],
+    "text": "Někdo musel skočit do ohně. Tentokrát to vyšlo."
+  },
+  {
+    "id": "ver-32",
+    "tags": ["zaklad", "preziti"],
+    "moods": ["work", "random"],
+    "text": "Nic fancy. Jen čistý chovanecký instinct."
+  },
+  {
+    "id": "ver-33",
+    "tags": ["spinavy", "prace"],
+    "moods": ["work"],
+    "text": "Ruce špinavé, výsledek čistý. Respekt dílně."
+  },
+  {
+    "id": "ver-34",
+    "tags": ["detsky"],
+    "moods": ["random", "party"],
+    "text": "Hračky ven, dospělost pryč. Verdikt: výhra."
+  }
+]

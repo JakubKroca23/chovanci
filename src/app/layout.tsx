@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Fredoka, Nunito } from "next/font/google";
+import { Manrope, Unbounded } from "next/font/google";
 import "./globals.css";
 
-const display = Fredoka({
+const display = Unbounded({
   variable: "--font-display",
   subsets: ["latin", "latin-ext"],
   weight: ["500", "600", "700"],
 });
 
-const body = Nunito({
+const body = Manrope({
   variable: "--font-body",
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
-  title: "Chovanci",
-  description: "Česká párty kartařská hra o situacích a soudu",
+  title: "ChovanecStone",
+  description: "Hearthstone s Chovanci — souboj 1v1, decky a generátor karet",
 };
 
 export default function RootLayout({

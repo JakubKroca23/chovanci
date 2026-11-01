@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { HsCard } from "@/components/hs/HsCard";
 import { getCoreCards, HEROES } from "@/lib/hs/cards";
 import {
   loadDecks,
@@ -74,75 +75,74 @@ export default function DecksPage() {
     };
     saveDeck(deck);
     saveHero(heroId);
-    setNote("Deck uložen — použije se ve hře vs bot.");
+    setNote("Deck uložen — použije se ve hře vs bot i v 1v1.");
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-8">
-      <Link href="/">← Domů</Link>
-      <h1 className="mt-4 text-3xl font-bold">Decky</h1>
-      <p className="opacity-70">Sestav 30 karet. {total} / 30</p>
+    <main className="cs-page">
+      <Link className="cs-back" href="/">
+        ← Domů
+      </Link>
+      <h1 className="cs-page__title">Decky</h1>
+      <p className="cs-page__lead">
+        Sestav 30 karet. Teď <strong style={{ color: "var(--cs-brass)" }}>{total}</strong> / 30
+      </p>
 
-      <label className="mt-4 block">
-        Název
-        <input
-          className="mt-1 w-full rounded-lg border px-3 py-2"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
+      <div className="cs-panel" style={{ display: "grid", gap: "0.85rem" }}>
+        <label className="cs-field">
+          Název
+          <input
+            className="cs-input"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {HEROES.map((h) => (
-          <button
-            key={h.id}
-            type="button"
-            className="rounded-full border px-3 py-2 text-sm"
-            style={{ outline: heroId === h.id ? "2px solid #2f6b4f" : undefined }}
-            onClick={() => setHeroId(h.id)}
-          >
-            {h.name}
-          </button>
-        ))}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+          {HEROES.map((h) => (
+            <button
+              key={h.id}
+              type="button"
+              className={`cs-chip${heroId === h.id ? " cs-chip--on" : ""}`}
+              onClick={() => setHeroId(h.id)}
+            >
+              {h.name}
+            </button>
+          ))}
+        </div>
+
+        <button type="button" className="cs-btn cs-btn--primary" onClick={save}>
+          Uložit deck
+        </button>
+        {note && <p className="cs-note">{note}</p>}
       </div>
 
-      <button
-        type="button"
-        className="mt-4 rounded-full bg-[#2f6b4f] px-4 py-2 font-semibold text-white"
-        onClick={save}
-      >
-        Uložit deck
-      </button>
-      {note && <p className="mt-2 text-sm opacity-80">{note}</p>}
-
-      <div className="mt-6 grid gap-2">
-        {pool.map((c) => (
-          <div
-            key={c.id}
-            className="flex items-center justify-between gap-2 rounded-lg border border-black/10 p-2"
-          >
-            <div className="min-w-0">
-              <div className="truncate font-semibold">
-                ({c.cost}) {c.name}{" "}
-                <span className="text-xs opacity-60">{c.type}</span>
+      <div className="hs-grid">
+        {pool.map((c) => {
+          const n = counts[c.id] ?? 0;
+          return (
+            <div key={c.id} style={{ display: "grid", gap: "0.45rem", justifyItems: "center" }}>
+              <HsCard
+                def={c}
+                as="div"
+                size="sm"
+                showText={false}
+                selected={n > 0}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+                <button type="button" className="cs-btn cs-btn--ghost" style={{ minHeight: 40, padding: "0.35rem 0.75rem" }} onClick={() => remove(c.id)}>
+                  −
+                </button>
+                <strong style={{ fontFamily: "var(--font-display)", minWidth: "1.5rem", textAlign: "center" }}>
+                  {n}
+                </strong>
+                <button type="button" className="cs-btn cs-btn--ghost" style={{ minHeight: 40, padding: "0.35rem 0.75rem" }} onClick={() => add(c.id, c.rarity)}>
+                  +
+                </button>
               </div>
-              <div className="text-xs opacity-70">{c.text}</div>
             </div>
-            <div className="flex items-center gap-2">
-              <button type="button" className="px-2" onClick={() => remove(c.id)}>
-                −
-              </button>
-              <span className="w-4 text-center">{counts[c.id] ?? 0}</span>
-              <button
-                type="button"
-                className="px-2"
-                onClick={() => add(c.id, c.rarity)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </main>
   );

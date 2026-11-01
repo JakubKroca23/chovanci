@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
+import { BoardMinionView } from "@/components/hs/BoardMinion";
+import { HeroPlate } from "@/components/hs/HeroPlate";
+import { HsCard } from "@/components/hs/HsCard";
+import { ManaBar } from "@/components/hs/ManaBar";
 import { getCardDef } from "@/lib/hs/cards";
 import { connectHsMatch } from "@/lib/hs/multi-client";
 import { getActiveDeck, loadHero } from "@/lib/hs/storage";
@@ -38,7 +42,7 @@ function DuelInner() {
           heroId: loadHero(),
           deck: deck.cards,
         });
-        setStatus("V lobby — čekám na 2. hráče…");
+        setStatus("Lobby — čekám na soupeře…");
       }
       if (msg.type === "lobby") setStatus(msg.message);
       if (msg.type === "state") {
@@ -65,104 +69,136 @@ function DuelInner() {
 
   return (
     <main className="battle">
-      <Link href="/">← Domů</Link>
-      <p>
-        Duel {code} · {status}
-      </p>
-      {!match && <p className="battle__log">Sdílej kód kamarádovi. Až budou 2, zápas naskočí.</p>}
+      <div className="battle__nav">
+        <Link className="cs-back" href="/">
+          ← Domů
+        </Link>
+        <span className="battle__brand">Duel · {code}</span>
+      </div>
+
+      {!match && (
+        <section className="battle__setup">
+          <h1>Čekárna</h1>
+          <p className="battle__lobby-code">{code}</p>
+          <p>{status}</p>
+          <p>Sdílej kód kamarádovi. Až budou dva, zápas naskočí.</p>
+        </section>
+      )}
+
       {match && me && foe && (
         <>
           <header className="battle__top">
-            <span>
-              {foe.name} HP {foe.hp}
-            </span>
-            <span>{myTurn ? "Tvůj tah" : "Soupeřův tah"}</span>
+            <HeroPlate
+              name={foe.name}
+              heroId={foe.heroId}
+              hp={foe.hp}
+              armor={foe.armor}
+            />
+            <div className={`battle__turn${myTurn ? " battle__turn--active" : ""}`}>
+              {myTurn ? "Tvůj tah" : "Soupeřův tah"} · {match.turn}
+            </div>
           </header>
-          <div className="battle__row battle__row--enemy">
-            {foe.board.map((m) => (
-              <button
-                key={m.instanceId}
-                type="button"
-                className="battle__minion"
-                disabled={!myTurn || !selected}
-                onClick={() =>
-                  act({
-                    type: "attack",
-                    attackerInstanceId: selected,
-                    target: m.instanceId,
-                  })
-                }
-              >
-                {getCardDef(m.cardId).name} {m.attack}/{m.health}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="battle__btn battle__btn--danger"
-              disabled={!myTurn}
-              onClick={() =>
-                selected
-                  ? act({
+
+          <div className="battle__board">
+            <div className="battle__row battle__row--enemy">
+              {foe.board.map((m) => (
+                <BoardMinionView
+                  key={m.instanceId}
+                  minion={m}
+                  disabled={!myTurn || !selected}
+                  onClick={() =>
+                    act({
                       type: "attack",
                       attackerInstanceId: selected,
-                      target: "hero",
+                      target: m.instanceId,
                     })
-                  : act({ type: "hero_attack", target: "hero" })
-              }
-            >
-              Face ({foe.hp})
-            </button>
-          </div>
-          <div className="battle__row battle__row--mine">
-            {me.board.map((m) => (
+                  }
+                />
+              ))}
               <button
-                key={m.instanceId}
                 type="button"
-                className={`battle__minion${selected === m.instanceId ? " battle__minion--selected" : ""}`}
+                className="battle__face"
                 disabled={!myTurn}
-                onClick={() => setSelected(m.instanceId)}
+                onClick={() =>
+                  selected
+                    ? act({
+                        type: "attack",
+                        attackerInstanceId: selected,
+                        target: "hero",
+                      })
+                    : act({ type: "hero_attack", target: "hero" })
+                }
               >
-                {getCardDef(m.cardId).name} {m.attack}/{m.health}
+                Face · {foe.hp}
               </button>
-            ))}
+            </div>
+            <div className="battle__row battle__row--mine">
+              {me.board.map((m) => (
+                <BoardMinionView
+                  key={m.instanceId}
+                  minion={m}
+                  selected={selected === m.instanceId}
+                  ready={m.canAttack && !m.exhausted}
+                  disabled={!myTurn}
+                  onClick={() => setSelected(m.instanceId)}
+                />
+              ))}
+            </div>
           </div>
+
           <footer className="battle__bottom">
-            <span>
-              {me.name} HP {me.hp} · Mana {me.mana}/{me.maxMana}
-            </span>
-            <button
-              type="button"
-              className="battle__btn battle__btn--primary"
-              disabled={!myTurn}
-              onClick={() => act({ type: "end_turn" })}
-            >
-              Konec tahu
-            </button>
-            <button
-              type="button"
-              className="battle__btn"
-              disabled={!myTurn || me.heroPowerUsed || me.mana < 2}
-              onClick={() => act({ type: "hero_power" })}
-            >
-              Hero power
-            </button>
+            <div>
+              <HeroPlate
+                name={me.name}
+                heroId={me.heroId}
+                hp={me.hp}
+                armor={me.armor}
+              />
+              <div style={{ marginTop: "0.55rem" }}>
+                <ManaBar mana={me.mana} maxMana={me.maxMana} />
+              </div>
+            </div>
+            <div className="battle__actions">
+              <button
+                type="button"
+                className="cs-btn"
+                disabled={!myTurn || me.heroPowerUsed || me.mana < 2}
+                onClick={() => act({ type: "hero_power" })}
+              >
+                Hero power
+              </button>
+              <button
+                type="button"
+                className="cs-btn cs-btn--primary"
+                disabled={!myTurn}
+                onClick={() => act({ type: "end_turn" })}
+              >
+                Konec tahu
+              </button>
+            </div>
           </footer>
+
           <div className="battle__hand">
             {me.hand.map((id, handIndex) => {
               const def = getCardDef(id);
               return (
-                <button
+                <HsCard
                   key={`${id}-${handIndex}`}
-                  type="button"
-                  className="battle__hand-card"
+                  def={def}
+                  size="sm"
+                  showText={false}
                   disabled={!myTurn || def.cost > me.mana}
                   onClick={() => act({ type: "play_card", handIndex })}
-                >
-                  ({def.cost}) {def.name}
-                </button>
+                />
               );
             })}
           </div>
+
+          {match.phase === "ended" && (
+            <div className="battle__banner">
+              {match.winner === you ? "Vítězství" : "Porážka"}
+            </div>
+          )}
         </>
       )}
     </main>
@@ -171,7 +207,13 @@ function DuelInner() {
 
 export default function DuelPage() {
   return (
-    <Suspense fallback={<main className="battle">Načítám…</main>}>
+    <Suspense
+      fallback={
+        <main className="battle">
+          <p className="battle__log">Načítám duel…</p>
+        </main>
+      }
+    >
       <DuelInner />
     </Suspense>
   );

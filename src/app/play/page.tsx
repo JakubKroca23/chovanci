@@ -2,6 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { BoardMinionView } from "@/components/hs/BoardMinion";
+import { HeroPlate } from "@/components/hs/HeroPlate";
+import { HsCard } from "@/components/hs/HsCard";
+import { ManaBar } from "@/components/hs/ManaBar";
 import { getCardDef, HEROES } from "@/lib/hs/cards";
 import { runBotTurn } from "@/lib/hs/bot";
 import { applyAction, createMatch } from "@/lib/hs/engine";
@@ -13,6 +17,12 @@ import {
 } from "@/lib/hs/storage";
 import type { HeroId, HsMatch } from "@/lib/hs/types";
 import "./battle.css";
+
+const HERO_ART: Record<HeroId, string> = {
+  nevychovanec: "/cards/portraits/nevychovanec.jpg",
+  vychovanec: "/cards/portraits/vychovanec.jpg",
+  prezivanec: "/cards/portraits/prezivanec.jpg",
+};
 
 export default function PlayPage() {
   const [heroId, setHeroId] = useState<HeroId>("nevychovanec");
@@ -73,35 +83,42 @@ export default function PlayPage() {
 
   const me = match?.players[0];
   const foe = match?.players[1];
+  const myTurn = match?.active === 0;
 
   return (
     <main className="battle">
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <Link href="/">← Domů</Link>
-        <span>ChovanecStone</span>
+      <div className="battle__nav">
+        <Link className="cs-back" href="/">
+          ← Domů
+        </Link>
+        <span className="battle__brand">ChovanecStone</span>
       </div>
 
       {!match && (
-        <section style={{ display: "grid", gap: "1rem", marginTop: "2rem" }}>
-          <h1>Hra proti botovi</h1>
-          <p>Vyber hrdinu a začni. Deck bereš z aktivního balíčku (nebo starter).</p>
-          <div style={{ display: "grid", gap: "0.5rem" }}>
+        <section className="battle__setup">
+          <h1>Souboj s botem</h1>
+          <p>Vyber hrdinu. Deck bereš z aktivního balíčku — jinak starter.</p>
+          <div className="battle__heroes">
             {HEROES.map((h) => (
               <button
                 key={h.id}
                 type="button"
-                className="battle__btn"
-                style={{
-                  outline: heroId === h.id ? "2px solid #6bcf7a" : undefined,
-                }}
+                className={`battle__hero-pick${heroId === h.id ? " battle__hero-pick--on" : ""}`}
                 onClick={() => setHeroId(h.id)}
               >
-                <strong>{h.name}</strong> — {h.powerText} (mana {h.powerCost})
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={HERO_ART[h.id]} alt="" />
+                <div>
+                  <strong>{h.name}</strong>
+                  <span>
+                    {h.powerText} · {h.powerCost} mana
+                  </span>
+                </div>
               </button>
             ))}
           </div>
-          <button type="button" className="battle__btn battle__btn--primary" onClick={start}>
-            Start zápasu
+          <button type="button" className="cs-btn cs-btn--primary cs-btn--block" onClick={start}>
+            Zahájit zápas
           </button>
         </section>
       )}
@@ -109,45 +126,53 @@ export default function PlayPage() {
       {match && me && foe && (
         <>
           <header className="battle__top">
-            <div>
-              <strong>{foe.name}</strong> · HP {foe.hp}
-              {foe.armor ? ` +${foe.armor}` : ""} · Mana {foe.mana}/{foe.maxMana}
-              {foe.secrets.length ? ` · Secrets ${foe.secrets.length}` : ""}
+            <HeroPlate
+              name={foe.name}
+              heroId={foe.heroId}
+              hp={foe.hp}
+              armor={foe.armor}
+              subtitle={
+                foe.secrets.length
+                  ? `Secrets ${foe.secrets.length}`
+                  : undefined
+              }
+            />
+            <div
+              className={`battle__turn${myTurn && !busy ? " battle__turn--active" : ""}`}
+            >
+              {match.phase === "ended"
+                ? "Konec"
+                : busy
+                  ? "Bot hraje"
+                  : myTurn
+                    ? "Tvůj tah"
+                    : "Soupeř"}{" "}
+              · {match.turn}
             </div>
-            <div>Tah {match.turn}</div>
           </header>
 
           <div className="battle__board">
             <div className="battle__row battle__row--enemy" aria-label="Soupeřův stůl">
-              {foe.board.map((m) => {
-                const def = getCardDef(m.cardId, extra);
-                return (
-                  <button
-                    key={m.instanceId}
-                    type="button"
-                    className="battle__minion"
-                    onClick={() => {
-                      if (!selected) return;
-                      doAction({
-                        type: "attack",
-                        attackerInstanceId: selected,
-                        target: m.instanceId,
-                      });
-                    }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={def.art} alt={def.name} />
-                    <div>{def.name}</div>
-                    <div className="battle__stats">
-                      <span>{m.attack}</span>
-                      <span>{m.health}</span>
-                    </div>
-                  </button>
-                );
-              })}
+              {foe.board.map((m) => (
+                <BoardMinionView
+                  key={m.instanceId}
+                  minion={m}
+                  extra={extra}
+                  disabled={!selected || busy || !myTurn}
+                  onClick={() => {
+                    if (!selected) return;
+                    doAction({
+                      type: "attack",
+                      attackerInstanceId: selected,
+                      target: m.instanceId,
+                    });
+                  }}
+                />
+              ))}
               <button
                 type="button"
-                className="battle__btn battle__btn--danger"
+                className="battle__face"
+                disabled={busy || !myTurn}
                 onClick={() => {
                   if (!selected) {
                     doAction({ type: "hero_attack", target: "hero" });
@@ -160,58 +185,59 @@ export default function PlayPage() {
                   });
                 }}
               >
-                Útok na hrdinu ({foe.hp})
+                Face · {foe.hp}
               </button>
             </div>
 
             <div className="battle__row battle__row--mine" aria-label="Tvůj stůl">
-              {me.board.map((m) => {
-                const def = getCardDef(m.cardId, extra);
-                return (
-                  <button
-                    key={m.instanceId}
-                    type="button"
-                    className={`battle__minion${m.canAttack && !m.exhausted ? " battle__minion--ready" : ""}${
-                      selected === m.instanceId ? " battle__minion--selected" : ""
-                    }`}
-                    onClick={() =>
-                      setSelected((s) =>
-                        s === m.instanceId ? null : m.instanceId,
-                      )
-                    }
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={def.art} alt={def.name} />
-                    <div>{def.name}</div>
-                    <div className="battle__stats">
-                      <span>{m.attack}</span>
-                      <span>{m.health}</span>
-                    </div>
-                  </button>
-                );
-              })}
+              {me.board.map((m) => (
+                <BoardMinionView
+                  key={m.instanceId}
+                  minion={m}
+                  extra={extra}
+                  selected={selected === m.instanceId}
+                  ready={m.canAttack && !m.exhausted}
+                  disabled={busy || !myTurn}
+                  onClick={() =>
+                    setSelected((s) =>
+                      s === m.instanceId ? null : m.instanceId,
+                    )
+                  }
+                />
+              ))}
             </div>
           </div>
 
           <footer className="battle__bottom">
             <div>
-              <strong>{me.name}</strong> · HP {me.hp}
-              {me.armor ? ` +${me.armor}` : ""} · Mana {me.mana}/{me.maxMana}
-              {me.weapon ? ` · Zbraň ${me.weapon.attack}/${me.weapon.durability}` : ""}
+              <HeroPlate
+                name={me.name}
+                heroId={me.heroId}
+                hp={me.hp}
+                armor={me.armor}
+                subtitle={
+                  me.weapon
+                    ? `Zbraň ${me.weapon.attack}/${me.weapon.durability}`
+                    : undefined
+                }
+              />
+              <div style={{ marginTop: "0.55rem" }}>
+                <ManaBar mana={me.mana} maxMana={me.maxMana} />
+              </div>
             </div>
             <div className="battle__actions">
               <button
                 type="button"
-                className="battle__btn"
-                disabled={busy || me.heroPowerUsed || me.mana < 2}
+                className="cs-btn"
+                disabled={busy || me.heroPowerUsed || me.mana < 2 || !myTurn}
                 onClick={() => doAction({ type: "hero_power" })}
               >
                 Hero power
               </button>
               <button
                 type="button"
-                className="battle__btn battle__btn--primary"
-                disabled={busy || match.active !== 0}
+                className="cs-btn cs-btn--primary"
+                disabled={busy || !myTurn}
                 onClick={() => doAction({ type: "end_turn" })}
               >
                 Konec tahu
@@ -222,41 +248,32 @@ export default function PlayPage() {
           <div className="battle__hand" aria-label="Ruka">
             {me.hand.map((cardId, handIndex) => {
               const def = getCardDef(cardId, extra);
-              const canPlay = !busy && match.active === 0 && def.cost <= me.mana;
+              const canPlay = !busy && myTurn && def.cost <= me.mana;
               return (
-                <button
-                  key={`${cardId}-${handIndex}`}
-                  type="button"
-                  className="battle__hand-card"
-                  disabled={!canPlay}
-                  onClick={() => doAction({ type: "play_card", handIndex })}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={def.art} alt={def.name} />
-                  <div>
-                    ({def.cost}) {def.name}
-                  </div>
-                  {def.type === "minion" && (
-                    <div className="battle__stats">
-                      <span>{def.attack}</span>
-                      <span>{def.health}</span>
-                    </div>
-                  )}
-                </button>
+                <div key={`${cardId}-${handIndex}`} style={{ ["--i" as string]: handIndex }}>
+                  <HsCard
+                    def={def}
+                    size="sm"
+                    showText={false}
+                    disabled={!canPlay}
+                    onClick={() => doAction({ type: "play_card", handIndex })}
+                  />
+                </div>
               );
             })}
           </div>
 
           {error && <p className="battle__error">{error}</p>}
           {match.phase === "ended" && (
-            <p className="battle__error">
-              {match.winner === 0 ? "Vyhráls!" : "Prohráls."}{" "}
-              <button type="button" className="battle__btn" onClick={start}>
-                Znovu
-              </button>
-            </p>
+            <div className="battle__banner">
+              {match.winner === 0 ? "Vítězství" : "Porážka"}
+              <div style={{ marginTop: "0.75rem" }}>
+                <button type="button" className="cs-btn cs-btn--primary" onClick={start}>
+                  Znovu
+                </button>
+              </div>
+            </div>
           )}
-          {busy && <p className="battle__log">Bot hraje…</p>}
           <div className="battle__log">
             {[...match.log].slice(-8).map((line, i) => (
               <div key={`${i}-${line}`}>{line}</div>

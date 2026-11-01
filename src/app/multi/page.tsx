@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState, type FormEvent } from "react";
 import { generateRoomCode } from "@/lib/multi-client";
-import "./multi.css";
 
 function MultiEntryInner() {
   const router = useRouter();
@@ -40,9 +39,7 @@ function MultiEntryInner() {
     if (mode === "create") {
       const room = generateRoomCode();
       setSubmitting(true);
-      router.push(
-        `/duel/${room}?name=${encodeURIComponent(trimmedName)}`,
-      );
+      router.push(`/duel/${room}?name=${encodeURIComponent(trimmedName)}`);
       return;
     }
 
@@ -57,25 +54,22 @@ function MultiEntryInner() {
   }
 
   return (
-    <main className="multi">
-      <Link className="multi__back" href="/">
+    <main className="cs-page" style={{ maxWidth: "28rem" }}>
+      <Link className="cs-back" href="/">
         ← Domů
       </Link>
+      <h1 className="cs-page__title">{title}</h1>
+      <p className="cs-page__lead">
+        {mode === "join"
+          ? "ChovanecStone 1v1 — zadej kód místnosti a jméno."
+          : "ChovanecStone 1v1 — zvol jméno, kód se vygeneruje."}
+      </p>
 
-      <header className="multi__header">
-        <h1 className="multi__title">{title}</h1>
-        <p className="multi__meta">
-          {mode === "join"
-            ? "ChovanecStone 1v1 — zadej kód místnosti a jméno."
-            : "ChovanecStone 1v1 — zvol jméno, kód se vygeneruje."}
-        </p>
-      </header>
-
-      <form className="multi__form" onSubmit={handleSubmit}>
-        <label className="multi__label">
+      <form className="cs-panel" onSubmit={handleSubmit} style={{ display: "grid", gap: "0.85rem" }}>
+        <label className="cs-field">
           Jméno
           <input
-            className="multi__input"
+            className="cs-input"
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={24}
@@ -86,41 +80,36 @@ function MultiEntryInner() {
         </label>
 
         {mode === "join" && (
-          <label className="multi__label">
+          <label className="cs-field">
             Kód místnosti
             <input
-              className="multi__input multi__input--code"
+              className="cs-input"
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               maxLength={4}
               autoComplete="off"
               placeholder="ABCD"
               required
+              style={{ letterSpacing: "0.22em", fontFamily: "var(--font-display)", fontWeight: 700 }}
             />
           </label>
         )}
 
-        {error && <p className="multi__error">{error}</p>}
+        {error && <p className="cs-note" style={{ color: "#ffb4a8" }}>{error}</p>}
 
-        <div className="multi__actions">
-          <button
-            type="submit"
-            className={`multi__btn ${mode === "join" ? "multi__btn--blue" : "multi__btn--green"}`}
-            disabled={submitting}
-          >
-            {submitting
-              ? "Přesměrovávám…"
-              : mode === "join"
-                ? "Vstoupit"
-                : "Vytvořit"}
-          </button>
-          <Link
-            className="multi__btn multi__btn--secondary"
-            href={mode === "join" ? "/multi?mode=create" : "/multi?mode=join"}
-          >
-            {mode === "join" ? "Spíš vytvořit místnost" : "Spíš se připojit"}
-          </Link>
-        </div>
+        <button
+          type="submit"
+          className={`cs-btn cs-btn--block ${mode === "join" ? "cs-btn--primary" : "cs-btn--ember"}`}
+          disabled={submitting}
+        >
+          {submitting ? "Přesměrovávám…" : mode === "join" ? "Vstoupit" : "Vytvořit"}
+        </button>
+        <Link
+          className="cs-btn cs-btn--ghost cs-btn--block"
+          href={mode === "join" ? "/multi?mode=create" : "/multi?mode=join"}
+        >
+          {mode === "join" ? "Spíš vytvořit místnost" : "Spíš se připojit"}
+        </Link>
       </form>
     </main>
   );
@@ -130,8 +119,8 @@ export default function MultiEntryPage() {
   return (
     <Suspense
       fallback={
-        <main className="multi">
-          <p className="multi__waiting">Načítám…</p>
+        <main className="cs-page">
+          <p className="cs-note">Načítám…</p>
         </main>
       }
     >

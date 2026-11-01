@@ -69,7 +69,7 @@
     "id": "ver-12",
     "tags": ["rytir"],
     "moods": ["love", "family"],
-    "text": "Rytíř v akci. Plášť optional, hrdinství povinné."
+    "text": "Rytíř v akci. Plášť volitelný, hrdinství povinné."
   },
   {
     "id": "ver-13",
@@ -99,13 +99,13 @@
     "id": "ver-17",
     "tags": ["preziti", "prace"],
     "moods": ["work", "crisis"],
-    "text": "Deadline přežil. Kariéra taky. Zázrak."
+    "text": "Termín přežil. Kariéra taky. Zázrak."
   },
   {
     "id": "ver-18",
     "tags": ["romance", "styl"],
     "moods": ["love", "party"],
-    "text": "Romantika s drobným nádechem cool. Bod."
+    "text": "Romantika s drobným nádechem šarmu. Bod."
   },
   {
     "id": "ver-19",
@@ -141,19 +141,19 @@
     "id": "ver-24",
     "tags": ["pochybnost", "konspirace"],
     "moods": ["random", "work"],
-    "text": "Otázky vyhrály nad odpověďmi. Filozofický checkmate."
+    "text": "Otázky vyhrály nad odpověďmi. Filozofický mat."
   },
   {
     "id": "ver-25",
     "tags": ["chaos"],
     "moods": ["work"],
-    "text": "Stand-up se změnil v stand-out. Chaos bere bod."
+    "text": "Ze stand-upu se stala show. Chaos bere bod."
   },
   {
     "id": "ver-26",
     "tags": ["preziti"],
     "moods": ["family", "party"],
-    "text": "Přežil rodinu i párty. Legendární stamina."
+    "text": "Přežil rodinu i párty. Legendární výdrž."
   },
   {
     "id": "ver-27",
@@ -189,7 +189,7 @@
     "id": "ver-32",
     "tags": ["zaklad", "preziti"],
     "moods": ["work", "random"],
-    "text": "Nic fancy. Jen čistý chovanecký instinct."
+    "text": "Nic okázalého. Jen čistý chovanecký instinkt."
   },
   {
     "id": "ver-33",

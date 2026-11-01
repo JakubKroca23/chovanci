@@ -175,7 +175,7 @@
   },
   {
     "id": "sit-30",
-    "text": "Deploy v pátek. Co může se pokazit?",
+    "text": "Nasazení v pátek. Co se může pokazit?",
     "tags": ["prace", "chaos", "preziti"],
     "mood": "work"
   },
@@ -217,7 +217,7 @@
   },
   {
     "id": "sit-37",
-    "text": "Někdo na LinkedIn tě označí jako ‚thought leader‘. Ty víš, že nejsi.",
+    "text": "Někdo na LinkedIn tě označí jako ‚myšlenkového lídra‘. Ty víš, že nejsi.",
     "tags": ["styl", "pochybnost", "prace"],
     "mood": "work"
   },
@@ -247,7 +247,7 @@
   },
   {
     "id": "sit-42",
-    "text": "Deadline je ‚včera‘. Ty jsi ‚zítra‘.",
+    "text": "Termín byl ‚včera‘. Ty jsi ‚zítra‘.",
     "tags": ["prace", "preziti", "chaos"],
     "mood": "work"
   },
@@ -268,5 +268,11 @@
     "text": "Pes rozhodne, kdo je alfa. Ty nejsi alfa.",
     "tags": ["pes", "rytir", "detsky"],
     "mood": "family"
+  },
+  {
+    "id": "sit-46",
+    "text": "Nic dramatického se neděje. Přesto musíš zvolit, jak to vezmeš.",
+    "tags": ["zaklad", "preziti", "pochybnost"],
+    "mood": "random"
   }
 ]

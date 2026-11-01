@@ -10,10 +10,17 @@ export function shuffle<T>(items: T[], seed: string): T[] {
   return arr;
 }
 
+/** Cards per player: min(4, floor(deck / players)). 2–4→4, 5→3, 6→2. */
+export function handSizeFor(playerCount: number): number {
+  if (playerCount <= 0) return 0;
+  return Math.min(4, Math.floor(getCards().length / playerCount));
+}
+
 export function dealHands(
   playerIds: string[],
   seed: string,
-): { hands: Record<string, string[]>; deck: string[] } {
+): { hands: Record<string, string[]>; deck: string[]; handSize: number } {
+  const handSize = handSizeFor(playerIds.length);
   const shuffled = shuffle(
     getCards().map((c) => c.id),
     seed,
@@ -21,10 +28,10 @@ export function dealHands(
   const hands: Record<string, string[]> = {};
   let offset = 0;
   for (const playerId of playerIds) {
-    hands[playerId] = shuffled.slice(offset, offset + 4);
-    offset += 4;
+    hands[playerId] = shuffled.slice(offset, offset + handSize);
+    offset += handSize;
   }
-  return { hands, deck: shuffled.slice(offset) };
+  return { hands, deck: shuffled.slice(offset), handSize };
 }
 
 export function playCard(hand: string[], cardId: string): string[] {

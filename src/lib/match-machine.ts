@@ -1,4 +1,10 @@
-import { dealHands, playCard, drawCard, pickSituationId } from "./deck";
+import {
+  dealHands,
+  playCard,
+  drawCard,
+  pickSituationId,
+  handSizeFor,
+} from "./deck";
 import { judgeRound } from "./judge";
 import { getSituation } from "./cards";
 import type { MatchState } from "./types";
@@ -134,7 +140,8 @@ export function advanceAfterVerdict(
     return state;
   }
 
-  // Played cards → discard; refill hands to 4
+  // Played cards → discard; refill hands to scaled hand size
+  const targetHandSize = handSizeFor(state.players.length);
   let discard = [
     ...state.discard,
     ...Object.values(state.plays),
@@ -144,12 +151,18 @@ export function advanceAfterVerdict(
 
   for (const player of state.players) {
     let hand = hands[player.id] ?? [];
-    while (hand.length < 4) {
+    while (hand.length < targetHandSize) {
       const drawn = drawCard(hand, deck, discard);
       hand = drawn.hand;
       deck = drawn.deck;
       discard = drawn.discard;
-      if (hand.length < 4 && deck.length === 0 && discard.length === 0) break;
+      if (
+        hand.length < targetHandSize &&
+        deck.length === 0 &&
+        discard.length === 0
+      ) {
+        break;
+      }
     }
     hands[player.id] = hand;
   }

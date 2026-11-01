@@ -6,6 +6,7 @@ import {
   submitPlay,
   advanceAfterVerdict,
 } from "./match-machine";
+import { handSizeFor } from "./deck";
 import { judgeRound } from "./judge";
 import { getSituation } from "./cards";
 
@@ -46,6 +47,24 @@ describe("match-machine", () => {
     expect(state.hands.p1).toHaveLength(4);
     expect(state.hands.p2).toHaveLength(4);
     expect(new Set([...state.hands.p1, ...state.hands.p2]).size).toBe(8);
+  });
+
+  it("startMatch with 6 players deals scaled non-empty hands", () => {
+    let state = createLobby("SIX6", "p1", "One");
+    for (let i = 2; i <= 6; i++) {
+      state = joinLobby(state, `p${i}`, `P${i}`);
+    }
+    state = startMatch(state, "SIX6:1");
+    const handSize = handSizeFor(6);
+    expect(handSize).toBeGreaterThan(0);
+    expect(handSize).toBe(2);
+    const dealt: string[] = [];
+    for (const p of state.players) {
+      expect(state.hands[p.id]).toHaveLength(handSize);
+      expect(state.hands[p.id].length).toBeGreaterThan(0);
+      dealt.push(...state.hands[p.id]);
+    }
+    expect(new Set(dealt).size).toBe(handSize * 6);
   });
 
   it("all plays trigger verdict and winner gets +1 score", () => {

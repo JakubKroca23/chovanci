@@ -41,7 +41,7 @@ function MultiEntryInner() {
       const room = generateRoomCode();
       setSubmitting(true);
       router.push(
-        `/multi/${room}?host=1&name=${encodeURIComponent(trimmedName)}`,
+        `/duel/${room}?name=${encodeURIComponent(trimmedName)}`,
       );
       return;
     }
@@ -53,7 +53,7 @@ function MultiEntryInner() {
     }
 
     setSubmitting(true);
-    router.push(`/multi/${room}?name=${encodeURIComponent(trimmedName)}`);
+    router.push(`/duel/${room}?name=${encodeURIComponent(trimmedName)}`);
   }
 
   return (
@@ -66,8 +66,8 @@ function MultiEntryInner() {
         <h1 className="multi__title">{title}</h1>
         <p className="multi__meta">
           {mode === "join"
-            ? "Zadej kód místnosti a své jméno."
-            : "Zvol jméno — kód místnosti se vygeneruje."}
+            ? "ChovanecStone 1v1 — zadej kód místnosti a jméno."
+            : "ChovanecStone 1v1 — zvol jméno, kód se vygeneruje."}
         </p>
       </header>
 

@@ -17,6 +17,7 @@ services:
       PORT: "3000"
       MATCH_WS_PORT: "3001"
       MATCH_WS_PATH: "/ws"
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     expose:
       - "3000"
       - "3001"
@@ -43,9 +44,9 @@ services:
       - traefik.http.routers.chovanci-web-http.priority=10
       - traefik.http.routers.chovanci-web-http.service=chovanci-web
 
-      # Match WebSocket (higher priority)
+      # Match WebSocket Situace legacy + HS duel (higher priority)
       - traefik.http.services.chovanci-ws.loadbalancer.server.port=3001
-      - traefik.http.routers.chovanci-ws.rule=Host(`chovanec.propoj.app`) && PathPrefix(`/ws`)
+      - traefik.http.routers.chovanci-ws.rule=Host(`chovanec.propoj.app`) && (PathPrefix(`/ws`) || PathPrefix(`/hs`))
       - traefik.http.routers.chovanci-ws.entrypoints=websecure
       - traefik.http.routers.chovanci-ws.tls=true
       - traefik.http.routers.chovanci-ws.tls.certresolver=letsencrypt

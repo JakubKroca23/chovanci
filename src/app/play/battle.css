@@ -1,0 +1,155 @@
+.battle {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  max-width: 960px;
+  margin: 0 auto;
+  color: var(--ink);
+}
+
+.battle__top,
+.battle__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--paper) 90%, black);
+}
+
+.battle__board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 280px;
+}
+
+.battle__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 120px;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px dashed color-mix(in srgb, var(--ink) 20%, transparent);
+}
+
+.battle__row--enemy {
+  background: color-mix(in srgb, #5a1f1f 18%, transparent);
+}
+
+.battle__row--mine {
+  background: color-mix(in srgb, #1f5a3a 18%, transparent);
+}
+
+.battle__minion {
+  width: 88px;
+  padding: 0.35rem;
+  border-radius: 0.65rem;
+  border: 2px solid transparent;
+  background: #2a211c;
+  color: #fff8f0;
+  cursor: pointer;
+  text-align: center;
+  font-size: 0.75rem;
+}
+
+.battle__minion--ready {
+  border-color: #6bcf7a;
+}
+
+.battle__minion--selected {
+  border-color: #ffd166;
+  box-shadow: 0 0 0 2px #ffd166;
+}
+
+.battle__minion img {
+  width: 100%;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 0.4rem;
+}
+
+.battle__stats {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 800;
+}
+
+.battle__hand {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.battle__hand-card {
+  flex: 0 0 92px;
+  border-radius: 0.55rem;
+  border: 2px solid color-mix(in srgb, var(--ink) 25%, transparent);
+  background: #1c1612;
+  color: #fff;
+  padding: 0.25rem;
+  cursor: pointer;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.battle__hand-card:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.battle__hand-card img {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 0.35rem;
+}
+
+.battle__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.battle__btn {
+  min-height: 44px;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: #3d2b1f;
+  color: #fff8f0;
+}
+
+.battle__btn--primary {
+  background: #2f6b4f;
+}
+
+.battle__btn--danger {
+  background: #8b2e2e;
+}
+
+.battle__log {
+  max-height: 100px;
+  overflow: auto;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--paper) 85%, black);
+}
+
+.battle__error {
+  color: #b00020;
+  font-weight: 700;
+  text-align: center;
+}
